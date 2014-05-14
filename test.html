@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="jquery-2.1.1.min.js"></script>
+    <script src="vexflow-min.js" ></script></script> 
+    <script >
+        $(function () {
+
+            var notes = [];
+            var beams = [];
+            var highhatNotes = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+            var snarenotes = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0];
+            var kicknotes = [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0];
+            
+
+
+            var snare="c/5"
+            var highhat = "g/5/x2"            
+            var kick = "f/4"
+            var kickrest = "e/4"
+
+            var canvas = $("#stave")[0];
+            var renderer = new Vex.Flow.Renderer(canvas,Vex.Flow.Renderer.Backends.CANVAS);
+            var ctx = renderer.getContext();
+            var stave = new Vex.Flow.Stave(10, 0, 350);
+            stave.addClef("percussion")
+            .addTimeSignature("4/4",15)
+            .setContext(ctx).draw();
+
+            
+            for (index = 0; index < highhatNotes.length / 4; index++) {
+                var beat = [];
+                var beatIndex = index * 4;
+                if (highhatNotes[beatIndex] == 1) {                    
+                    if (highhatNotes[beatIndex + 1] == 1) {
+                        beat.push(new Vex.Flow.StaveNote({ keys: [highhat], duration: "16" }));
+                        beat.push(new Vex.Flow.StaveNote({ keys: [highhat], duration: "16" }));
+                    }
+                    else
+                    {
+                        beat.push(new Vex.Flow.StaveNote({ keys: [highhat], duration: "8" }));
+                    }
+                } else {
+                    beat.push(new Vex.Flow.StaveNote({ keys: [snare], duration: "8r" }));
+                }
+                if (highhatNotes[beatIndex + 2] == 1) {
+                    if (highhatNotes[beatIndex + 3] == 1) {
+                        beat.push(new Vex.Flow.StaveNote({ keys: [highhat], duration: "16" }));
+                        beat.push(new Vex.Flow.StaveNote({ keys: [highhat], duration: "16" }));
+                    }
+                    else {
+                        beat.push(new Vex.Flow.StaveNote({ keys: [highhat], duration: "8" }));
+                    }
+                }
+                else {
+                    beat.push(new Vex.Flow.StaveNote({ keys: [snare], duration: "8r" }));
+                }
+                var beam = new Vex.Flow.Beam(beat);
+                beams.push(beam);
+                notes=notes.concat(beat);                
+            }
+            
+
+            var voice = new Vex.Flow.Voice({
+                num_beats: 4,
+                beat_value: 4,
+                resolution: Vex.Flow.RESOLUTION
+            });
+            voice.addTickables([new Vex.Flow.BarNote()]);
+            voice.addTickables(notes);
+
+
+
+            var bassnotes = [
+                    new Vex.Flow.StaveNote({ keys: [kick], duration: "q", stem_direction: Vex.Flow.StaveNote.STEM_DOWN }),
+                    new Vex.Flow.StaveNote({ keys: [kickrest], duration: "qr" }),
+                  new Vex.Flow.StaveNote({ keys: [kick], duration: "8", stem_direction: Vex.Flow.StaveNote.STEM_DOWN }),
+                  new Vex.Flow.StaveNote({ keys: [kick], duration: "8", stem_direction: Vex.Flow.StaveNote.STEM_DOWN }),
+                  new Vex.Flow.StaveNote({ keys: [kickrest], duration: "qr" })
+            ];
+
+            // Create a voice in 4/4
+            var voicebass = new Vex.Flow.Voice({
+                num_beats: 4,
+                beat_value: 4,
+                resolution: Vex.Flow.RESOLUTION
+            });
+
+            voicebass.addTickables([new Vex.Flow.BarNote()]);
+            voicebass.addTickables(bassnotes);
+
+            var formatter = new Vex.Flow.Formatter().joinVoices([voice, voicebass]).format([voice, voicebass], 293);
+
+            voice.draw(ctx, stave);
+            voicebass.draw(ctx, stave);
+
+            for (i = 0; i < beams.length; i++) {
+                beams[i].setContext(ctx).draw();
+            }
+            beam2.setContext(ctx).draw();
+        });
+    </script>
+
+</head>
+
+<body>
+    <div style="">
+      <canvas id="stave" width=500 height=120></canvas></div>
+</body>
+</html>
