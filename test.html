@@ -7,107 +7,191 @@
     <script src="jquery-2.1.1.min.js"></script>
     <script src="vexflow-min.js" ></script></script> 
     <script >
-        $(function () {
-
+        function getBeats(measureNotes,beatNote,restNote,direction) {
             var notes = [];
             var beams = [];
-            var highhatNotes = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-            var snarenotes = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0];
-            var kicknotes = [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0];
-            
 
+            for (index = 0; index < measureNotes.length / 4; index++) {
+                var beat = [];
+                var beatIndex = index * 4;
 
-            var snare="c/5"
-            var highhat = "g/5/x2"            
-            var kick = "f/4"
-            var kickrest = "e/4"
+                if (measureNotes[beatIndex + 3] == 1) { //a
+                    //2nd 8th is a 16th (beat) or rest.
+                    if (measureNotes[beatIndex + 2] == 1) { // &
+                        //first beat is a 16th note
+                        if (measureNotes[beatIndex + 1] == 1) { //e
 
-            var canvas = $("#stave")[0];
-            var renderer = new Vex.Flow.Renderer(canvas,Vex.Flow.Renderer.Backends.CANVAS);
+                            if (measureNotes[beatIndex] == 1) { //1
+                                beat.push("16");
+                            } else {
+                                beat.push("16r");
+                            }
+                            beat.push("16");
+                        } else { //e
+                            if (measureNotes[beatIndex] == 1) { //1
+                                beat.push("16");
+                            } else {
+                                beat.push("16r");
+                            }
+                            beat.push("16r"); //e
+                        }
+                        beat.push("16"); //&
+                    } else {
+                        //first beat is a 8th note or rest
+                        if (measureNotes[beatIndex + 1] == 1) {
+
+                            if (measureNotes[beatIndex] == 1) {
+                                beat.push("16");
+                            } else {
+                                beat.push("16r");
+                            }
+                            beat.push("16");
+                        } else {
+                            if (measureNotes[beatIndex] == 1) {
+                                beat.push("16");
+                                beat.push("16r");
+                            } else {
+                                beat.push("8r");
+                            }
+
+                        }
+                        beat.push("16r");
+                    }
+                    beat.push("16");//a
+                } else {
+                    if (measureNotes[beatIndex + 2] == 1) {
+
+                        if (measureNotes[beatIndex + 1] == 1) {
+                            //first beat is a 16th note
+                            if (measureNotes[beatIndex] == 1) {
+                                beat.push("16");
+                            } else {
+                                beat.push("16r");
+                            }
+                            beat.push("16");
+                        } else {
+                            if (measureNotes[beatIndex] == 1) {
+                                beat.push("8");
+                            } else {
+                                beat.push("8");
+                            }
+                        }
+                        beat.push("8");
+                    } else {
+                        //first beat is a 8th note or rest
+                        if (measureNotes[beatIndex + 1] == 1) {
+
+                            if (measureNotes[beatIndex] == 1) {
+                                beat.push("16");
+                            } else {
+                                beat.push("16r");
+                            }
+                            beat.push("16");
+                            beat.push("8r");
+                        } else {
+                            if (measureNotes[beatIndex] == 1) {
+                                beat.push("q");
+                            } else {
+                                beat.push("qr");
+                            }
+                        }
+                    }
+                }
+             
+                var beamnotes = [];
+                for (j = 0; j < beat.length; j++) {
+                    if (beat[j].indexOf("r") > -1) {
+                        notes.push(new Vex.Flow.StaveNote({ keys: [restNote], duration: beat[j],stem_direction:direction }));
+                    } else {
+                        var note = new Vex.Flow.StaveNote({ keys: [beatNote], duration: beat[j], stem_direction: direction });
+                        notes.push(note);
+                        beamnotes.push(note);
+                    }
+                }
+                if (beamnotes.length > 1) {
+                    var beam = new Vex.Flow.Beam(beamnotes);
+                    beams.push(beam);
+                }
+            }
+            return { beams: beams, notes: notes };
+        }
+        function TuppleMeasure(canvas, highhatNotes, timesignature,kickNotes) {
+            var snareNote = "c/5";
+            var hhNote = "g/5/x2";
+            var kick = "f/4";
+            var kickrest = "e/4";
+
+            var renderer = new Vex.Flow.Renderer(canvas, Vex.Flow.Renderer.Backends.CANVAS);
             var ctx = renderer.getContext();
             var stave = new Vex.Flow.Stave(10, 0, 350);
             stave.addClef("percussion")
-            .addTimeSignature("4/4",15)
-            .setContext(ctx).draw();
+                .addTimeSignature(timesignature.beats +"/" +timesignature.value, 15)
+                .setContext(ctx).draw();
 
+            var highhatnotes = getBeats(highhatNotes,hhNote,snareNote,1);
+
+            var kicknotes = getBeats(kickNotes, kick, kickrest,-1);
+
+
+        var voice = new Vex.Flow.Voice({
+            num_beats: timesignature.beats,
+            beat_value: timesignature.value,
+            resolution: Vex.Flow.RESOLUTION
+        });
+        voice.addTickables([new Vex.Flow.BarNote()]);
+        voice.addTickables(highhatnotes.notes);
+
+
+        // Create a voice in 4/4
+        var voicebass = new Vex.Flow.Voice({
+            num_beats:timesignature.beats,
+            beat_value: timesignature.value,
+            resolution: Vex.Flow.RESOLUTION
+        });
+
+        voicebass.addTickables([new Vex.Flow.BarNote()]);
+        voicebass.addTickables(kicknotes.notes);
+
+        var formatter = new Vex.Flow.Formatter().joinVoices([voice, voicebass]).format([voice, voicebass], 293);
+
+        voice.draw(ctx, stave);
+        voicebass.draw(ctx, stave);
+
+
+        beams = highhatnotes.beams;
+        for (i = 0; i < beams.length; i++) {
+            beams[i].setContext(ctx).draw();
+        }
+
+        beams = kicknotes.beams;
+        for (i = 0; i < beams.length; i++) {
+            beams[i].setContext(ctx).draw();
+        }
+
+        }
+        $(function () {
+
+            var highhatNotes = [1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0];
+            var snarenotes = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0];
+            var kicknotes = [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0];
+            var commonTime = { beats: 4, value: 4 };
+
+            TuppleMeasure($("#stave1")[0], highhatNotes, commonTime, kicknotes);
+
+            TuppleMeasure($("#stave2")[0], [1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1], commonTime, [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0]);
             
-            for (index = 0; index < highhatNotes.length / 4; index++) {
-                var beat = [];
-                var beatIndex = index * 4;
-                if (highhatNotes[beatIndex] == 1) {                    
-                    if (highhatNotes[beatIndex + 1] == 1) {
-                        beat.push(new Vex.Flow.StaveNote({ keys: [highhat], duration: "16" }));
-                        beat.push(new Vex.Flow.StaveNote({ keys: [highhat], duration: "16" }));
-                    }
-                    else
-                    {
-                        beat.push(new Vex.Flow.StaveNote({ keys: [highhat], duration: "8" }));
-                    }
-                } else {
-                    beat.push(new Vex.Flow.StaveNote({ keys: [snare], duration: "8r" }));
-                }
-                if (highhatNotes[beatIndex + 2] == 1) {
-                    if (highhatNotes[beatIndex + 3] == 1) {
-                        beat.push(new Vex.Flow.StaveNote({ keys: [highhat], duration: "16" }));
-                        beat.push(new Vex.Flow.StaveNote({ keys: [highhat], duration: "16" }));
-                    }
-                    else {
-                        beat.push(new Vex.Flow.StaveNote({ keys: [highhat], duration: "8" }));
-                    }
-                }
-                else {
-                    beat.push(new Vex.Flow.StaveNote({ keys: [snare], duration: "8r" }));
-                }
-                var beam = new Vex.Flow.Beam(beat);
-                beams.push(beam);
-                notes=notes.concat(beat);                
-            }
-            
+            //TuppleMeasure($("#stave3")[0], [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], timesignature, [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0]);
 
-            var voice = new Vex.Flow.Voice({
-                num_beats: 4,
-                beat_value: 4,
-                resolution: Vex.Flow.RESOLUTION
-            });
-            voice.addTickables([new Vex.Flow.BarNote()]);
-            voice.addTickables(notes);
+            TuppleMeasure($("#stave3")[0], [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], {beats:3,value:4}, [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0]);
 
-
-
-            var bassnotes = [
-                    new Vex.Flow.StaveNote({ keys: [kick], duration: "q", stem_direction: Vex.Flow.StaveNote.STEM_DOWN }),
-                    new Vex.Flow.StaveNote({ keys: [kickrest], duration: "qr" }),
-                  new Vex.Flow.StaveNote({ keys: [kick], duration: "8", stem_direction: Vex.Flow.StaveNote.STEM_DOWN }),
-                  new Vex.Flow.StaveNote({ keys: [kick], duration: "8", stem_direction: Vex.Flow.StaveNote.STEM_DOWN }),
-                  new Vex.Flow.StaveNote({ keys: [kickrest], duration: "qr" })
-            ];
-
-            // Create a voice in 4/4
-            var voicebass = new Vex.Flow.Voice({
-                num_beats: 4,
-                beat_value: 4,
-                resolution: Vex.Flow.RESOLUTION
-            });
-
-            voicebass.addTickables([new Vex.Flow.BarNote()]);
-            voicebass.addTickables(bassnotes);
-
-            var formatter = new Vex.Flow.Formatter().joinVoices([voice, voicebass]).format([voice, voicebass], 293);
-
-            voice.draw(ctx, stave);
-            voicebass.draw(ctx, stave);
-
-            for (i = 0; i < beams.length; i++) {
-                beams[i].setContext(ctx).draw();
-            }
-            beam2.setContext(ctx).draw();
         });
     </script>
 
 </head>
 
 <body>
-    <div style="">
-      <canvas id="stave" width=500 height=120></canvas></div>
+    <div style=""><canvas id="stave1" width=500 height=120></canvas></div>
+    <div style=""><canvas id="stave2" width=500 height=120></canvas></div>
+    <div style=""><canvas id="stave3" width=500 height=120></canvas></div>
 </body>
 </html>
