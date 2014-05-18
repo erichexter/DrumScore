@@ -7,92 +7,117 @@
     <script src="jquery-2.1.1.min.js"></script>
     <script src="vexflow-min.js" ></script></script> 
     <script >
-        function getBeats(measureNotes,beatNote,restNote,direction) {
+
+        function flatenBeats(arrayOf16thNotes) {
+            var output = arrayOf16thNotes[0];
+            for (var index = 0; index < arrayOf16thNotes[0].length; index++) {
+                for (var j = 0; j < arrayOf16thNotes.length; j++) {
+                    if (arrayOf16thNotes[j][index] == 1) {
+                        output[index] = 1;
+                    }                    
+                }
+            }
+            return output;
+        }
+
+        function getNotes(beatNotes, measureNotes, index) {
+            var output = [];
+            for (var i = 0; i < measureNotes.length;i++) {
+                if (measureNotes[i][index] == 1) {
+                    output.push(beatNotes[i]);
+                }
+            }
+            return output;
+        }
+
+        function getBeats(measureNotes,beatNotes,restNote,direction) {
             var notes = [];
             var beams = [];
 
-            for (index = 0; index < measureNotes.length / 4; index++) {
+            for (index = 0; index < measureNotes[0].length / 4; index++) {
                 var beat = [];
                 var beatIndex = index * 4;
-
-                if (measureNotes[beatIndex + 3] == 1) { //a
+                var measure = flatenBeats(measureNotes);
+                //var measure = measureNotes[0];
+                if (measure[beatIndex + 3] == 1) { //a
                     //2nd 8th is a 16th (beat) or rest.
-                    if (measureNotes[beatIndex + 2] == 1) { // &
+                    if (measure[beatIndex + 2] == 1) { // &
                         //first beat is a 16th note
-                        if (measureNotes[beatIndex + 1] == 1) { //e
+                        if (measure[beatIndex + 1] == 1) { //e
 
-                            if (measureNotes[beatIndex] == 1) { //1
-                                beat.push("16");
+                            if (measure[beatIndex] == 1) { //1
+                                
+                                beat.push({ duration: "16", keys: getNotes(beatNotes,measureNotes, beatIndex) });
                             } else {
-                                beat.push("16r");
+                                beat.push({ duration: "16r", keys: getNotes(beatNotes, measureNotes, beatIndex) });
                             }
-                            beat.push("16");
+                            beat.push({ duration: "16", keys: getNotes(beatNotes, measureNotes, beatIndex + 1) });
                         } else { //e
-                            if (measureNotes[beatIndex] == 1) { //1
-                                beat.push("16");
+                            if (measure[beatIndex] == 1) { //1
+                                beat.push({ duration: "16", keys: getNotes(beatNotes, measureNotes, beatIndex) });
                             } else {
-                                beat.push("16r");
+                                beat.push({ duration: "16r", keys: getNotes(beatNotes, measureNotes, beatIndex) });
                             }
-                            beat.push("16r"); //e
+                            beat.push({ duration: "16r", keys: getNotes(beatNotes, measureNotes, beatIndex + 1) }); //e
                         }
-                        beat.push("16"); //&
+                        beat.push({ duration: "16", keys: getNotes(beatNotes, measureNotes, beatIndex + 2) }); //&
                     } else {
                         //first beat is a 8th note or rest
-                        if (measureNotes[beatIndex + 1] == 1) {
+                        if (measure[beatIndex + 1] == 1) {
 
-                            if (measureNotes[beatIndex] == 1) {
-                                beat.push("16");
+                            if (measure[beatIndex] == 1) {
+                                beat.push({ duration: "16", keys: getNotes(beatNotes, measureNotes, beatIndex) });
                             } else {
-                                beat.push("16r");
+                                beat.push({ duration: "16r", keys: getNotes(beatNotes, measureNotes, beatIndex) });
                             }
-                            beat.push("16");
+                            beat.push({ duration: "16", keys: getNotes(beatNotes, measureNotes, beatIndex + 1) });
                         } else {
-                            if (measureNotes[beatIndex] == 1) {
-                                beat.push("16");
-                                beat.push("16r");
+                            if (measure[beatIndex] == 1) {
+                                beat.push({ duration: "16", keys: getNotes(beatNotes, measureNotes, beatIndex) });
+                                beat.push({ duration: "16r", keys: getNotes(beatNotes, measureNotes, beatIndex) });
                             } else {
-                                beat.push("8r");
+                                beat.push({ duration: "8r", keys: getNotes(beatNotes, measureNotes, beatIndex + 1) });
                             }
 
                         }
-                        beat.push("16r");
+                        beat.push({ duration: "16r", keys: getNotes(beatNotes, measureNotes, beatIndex + 2) });
                     }
-                    beat.push("16");//a
+                    beat.push({ duration: "16", keys: getNotes(beatNotes, measureNotes, beatIndex + 3) });//a
                 } else {
-                    if (measureNotes[beatIndex + 2] == 1) {
+                    if (measure[beatIndex + 2] == 1) {
 
-                        if (measureNotes[beatIndex + 1] == 1) {
+                        if (measure[beatIndex + 1] == 1) {
                             //first beat is a 16th note
-                            if (measureNotes[beatIndex] == 1) {
-                                beat.push("16");
+                            if (measure[beatIndex] == 1) {
+                                beat.push({ duration: "16", keys: getNotes(beatNotes, measureNotes, beatIndex) });
                             } else {
-                                beat.push("16r");
+                                beat.push({ duration: "16r" });
                             }
-                            beat.push("16");
+                            beat.push({ duration: "16", keys: getNotes(beatNotes, measureNotes, beatIndex + 1) });
                         } else {
-                            if (measureNotes[beatIndex] == 1) {
-                                beat.push("8");
+                            if (measure[beatIndex] == 1) {
+                                beat.push({ duration: "8", keys: getNotes(beatNotes, measureNotes, beatIndex) });
                             } else {
-                                beat.push("8");
+                                beat.push({ duration: "8r", keys: getNotes(beatNotes, measureNotes, beatIndex) });
                             }
                         }
-                        beat.push("8");
+                        beat.push({ duration: "8", keys: getNotes(beatNotes, measureNotes, beatIndex + 2) });
                     } else {
                         //first beat is a 8th note or rest
-                        if (measureNotes[beatIndex + 1] == 1) {
+                        if (measure[beatIndex + 1] == 1) {
 
-                            if (measureNotes[beatIndex] == 1) {
-                                beat.push("16");
+                            if (measure[beatIndex] == 1) {
+                                beat.push({ duration: "16", keys: getNotes(beatNotes, measureNotes, beatIndex) });
                             } else {
-                                beat.push("16r");
+                                beat.push({ duration: "16r", keys: getNotes(beatNotes, measureNotes, beatIndex) });
                             }
-                            beat.push("16");
-                            beat.push("8r");
+                            beat.push({ duration: "16", keys: getNotes(beatNotes, measureNotes, beatIndex + 1) });
+                            beat.push({ duration: "8r", keys: getNotes(beatNotes, measureNotes, beatIndex + 2) });
                         } else {
-                            if (measureNotes[beatIndex] == 1) {
-                                beat.push("q");
+                            if (measure[beatIndex] == 1) {
+                                beat.push({ duration: "q", keys: getNotes(beatNotes, measureNotes, beatIndex) });
                             } else {
-                                beat.push("qr");
+                                beat.push({ duration: "qr", keys: getNotes(beatNotes, measureNotes, beatIndex) });
                             }
                         }
                     }
@@ -100,10 +125,11 @@
              
                 var beamnotes = [];
                 for (j = 0; j < beat.length; j++) {
-                    if (beat[j].indexOf("r") > -1) {
-                        notes.push(new Vex.Flow.StaveNote({ keys: [restNote], duration: beat[j],stem_direction:direction }));
+                    if (beat[j].duration.indexOf("r") > -1) {
+                        notes.push(new Vex.Flow.StaveNote({ keys: [restNote], duration: beat[j].duration,stem_direction:direction }));
                     } else {
-                        var note = new Vex.Flow.StaveNote({ keys: [beatNote], duration: beat[j], stem_direction: direction });
+                        console.log(beat[j].keys);
+                        var note = new Vex.Flow.StaveNote({ keys: beat[j].keys, duration: beat[j].duration, stem_direction: direction });
                         notes.push(note);
                         beamnotes.push(note);
                     }
@@ -115,7 +141,7 @@
             }
             return { beams: beams, notes: notes };
         }
-        function TuppleMeasure(canvas, highhatNotes, timesignature,kickNotes) {
+        function TuppleMeasure(canvas, highhatNotes, timesignature,kickNotes,snarenotes) {
             var snareNote = "c/5";
             var hhNote = "g/5/x2";
             var kick = "f/4";
@@ -128,9 +154,11 @@
                 .addTimeSignature(timesignature.beats +"/" +timesignature.value, 15)
                 .setContext(ctx).draw();
 
-            var highhatnotes = getBeats(highhatNotes,hhNote,snareNote,1);
 
-            var kicknotes = getBeats(kickNotes, kick, kickrest,-1);
+
+            var highhatnotes = getBeats([highhatNotes, snarenotes], [hhNote, snareNote], snareNote, 1);
+
+            var kicknotes = getBeats([kickNotes], [kick], kickrest,-1);
 
 
         var voice = new Vex.Flow.Voice({
@@ -176,13 +204,13 @@
             var kicknotes = [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0];
             var commonTime = { beats: 4, value: 4 };
 
-            TuppleMeasure($("#stave1")[0], highhatNotes, commonTime, kicknotes);
+            TuppleMeasure($("#stave1")[0], highhatNotes, commonTime, kicknotes, snarenotes);
 
-            TuppleMeasure($("#stave2")[0], [1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1], commonTime, [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0]);
+            TuppleMeasure($("#stave2")[0], [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], commonTime, [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0], snarenotes);
             
             //TuppleMeasure($("#stave3")[0], [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], timesignature, [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0]);
 
-            TuppleMeasure($("#stave3")[0], [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], {beats:3,value:4}, [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0]);
+            TuppleMeasure($("#stave3")[0], [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], { beats: 3, value: 4 }, [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0], snarenotes);
 
         });
     </script>
