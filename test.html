@@ -6,6 +6,7 @@
     <title></title>
     <script src="jquery-2.1.1.min.js"></script>
     <script src="vexflow-min.js" ></script></script> 
+    <script type='text/javascript' src='knockout-3.1.0.js'></script>
     <script >
 
         function flatenBeats(arrayOf16thNotes) {
@@ -141,6 +142,50 @@
             }
             return { beams: beams, notes: notes };
         }
+        function TuppleMeasure2(canvas, timesignature, voicenotes) {
+            var renderer = new Vex.Flow.Renderer(canvas, Vex.Flow.Renderer.Backends.CANVAS);
+            var ctx = renderer.getContext();
+            var stave = new Vex.Flow.Stave(10, 0, 350);
+            stave.addClef("percussion")
+                .addTimeSignature(timesignature.beats + "/" + timesignature.value, 15)
+                .setContext(ctx).draw();
+
+            var voices = [];
+            var beams = [];
+            for (var i = 0; i < voicenotes.length; i++) {
+                var voicenote = voicenotes[i];
+                var measurenotes = [];
+                var notes = [];
+                for (j = 0; j < voicenote.lines.length; j++) {
+                    measurenotes.push(voicenote.lines[j].notes);
+                    notes.push(voicenote.lines[j].note);
+                }
+                var combineNotes = getBeats(measurenotes, notes, voicenote.restnote, voicenote.direction);
+                var voice = new Vex.Flow.Voice({
+                    num_beats: timesignature.beats,
+                    beat_value: timesignature.value,
+                    resolution: Vex.Flow.RESOLUTION
+                });
+                voice.addTickables([new Vex.Flow.BarNote()]);
+                voice.addTickables(combineNotes.notes);
+                voices.push(voice);
+                tempbeams = combineNotes.beams;
+                for (var b = 0; b < tempbeams.length; b++) {
+                    beams.push(tempbeams[b]);
+                }
+
+            }
+
+            var formatter = new Vex.Flow.Formatter().joinVoices(voices).format(voices, 293);
+
+            for (var k = 0; k < voices.length; k++) {
+                voices[k].draw(ctx, stave);
+            }
+            for (var i = 0; i < beams.length; i++) {
+                beams[i].setContext(ctx).draw();
+            }
+
+        }
         function TuppleMeasure(canvas, highhatNotes, timesignature,kickNotes,snarenotes) {
             var snareNote = "c/5";
             var hhNote = "g/5/x2";
@@ -153,7 +198,6 @@
             stave.addClef("percussion")
                 .addTimeSignature(timesignature.beats +"/" +timesignature.value, 15)
                 .setContext(ctx).draw();
-
 
 
             var highhatnotes = getBeats([highhatNotes, snarenotes], [hhNote, snareNote], snareNote, 1);
@@ -198,13 +242,35 @@
 
         }
         $(function () {
+            var snareNote = "c/5";
+            var hhNote = "g/5/x2";
+            var kick = "f/4";
+            var kickrest = "e/4";
 
-            var highhatNotes = [1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0];
+            var highhatNotes = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
             var snarenotes = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0];
-            var kicknotes = [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0];
+            var kicknotes = [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0];
             var commonTime = { beats: 4, value: 4 };
 
-            TuppleMeasure($("#stave1")[0], highhatNotes, commonTime, kicknotes, snarenotes);
+
+            var voicenotes = [
+                {
+                restnote: snareNote,
+                lines: [{ notes: highhatNotes, note: hhNote },
+                    { notes: snarenotes, note: snareNote }
+                ],
+                direction: 1
+                },
+                {
+                    restnote: kickrest,
+                    lines: [{ notes: kicknotes, note: kick }
+                    ],
+                    direction: -1
+                },
+            ];
+
+
+            TuppleMeasure2($("#stave1")[0], commonTime, voicenotes);
 
             TuppleMeasure($("#stave2")[0], [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], commonTime, [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0], snarenotes);
             
@@ -212,6 +278,25 @@
 
             TuppleMeasure($("#stave3")[0], [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], { beats: 3, value: 4 }, [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0], snarenotes);
 
+        });
+
+        $(function() {
+            var line = function (name) {
+                this.name = name;
+                this.notes = ko.observableArray([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+            }
+
+            // The view model is an abstract description of the state of the UI, but without any knowledge of the UI technology (HTML)
+            var viewModel = {
+                lines: [
+                    new line("hh"),
+                    new line("sd"),
+                    new line("bd"),
+                ],
+                showRenderTimes: ko.observable(false)
+            };
+
+            ko.applyBindings(viewModel);
         });
     </script>
 
@@ -221,5 +306,24 @@
     <div style=""><canvas id="stave1" width=500 height=120></canvas></div>
     <div style=""><canvas id="stave2" width=500 height=120></canvas></div>
     <div style=""><canvas id="stave3" width=500 height=120></canvas></div>
+    <div>
+        <table>
+            <tr>
+                <th>instr</th>
+                <th>1e&a</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+            </tr>
+            <!-- ko foreach: { data: lines, as: 'line' } -->
+            <tr>
+                <td data-bind="text: line.name"></td>
+                <!-- ko foreach: {data:notes, as:'note'} -->
+                <td><input type="checkbox" data-bind="checked: note" /></td>
+                <!-- /ko -->
+            </tr>
+            <!-- /ko -->
+        </table>
+    </div>
 </body>
 </html>
