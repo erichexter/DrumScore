@@ -143,6 +143,7 @@
             return { beams: beams, notes: notes };
         }
         function TuppleMeasure2(canvas, timesignature, voicenotes) {
+            canvas.width = canvas.width;
             var renderer = new Vex.Flow.Renderer(canvas, Vex.Flow.Renderer.Backends.CANVAS);
             var ctx = renderer.getContext();
             var stave = new Vex.Flow.Stave(10, 0, 350);
@@ -186,144 +187,138 @@
             }
 
         }
-        function TuppleMeasure(canvas, highhatNotes, timesignature,kickNotes,snarenotes) {
+       
+      
+        
+
+        $(function () {            
+            $("input").click(function() {
+                redraw();
+            });
+            redraw();
+        });
+
+
+        function redraw() {
             var snareNote = "c/5";
             var hhNote = "g/5/x2";
             var kick = "f/4";
             var kickrest = "e/4";
+            var v = $("#hh input").map(function () {
+                return this.checked;
+            }).get();
+            var sd = $("#sd input").map(function () {
+                return this.checked;
+            }).get();
+            var bd = $("#bd input").map(function () {
+                return this.checked;
+            }).get();
 
-            var renderer = new Vex.Flow.Renderer(canvas, Vex.Flow.Renderer.Backends.CANVAS);
-            var ctx = renderer.getContext();
-            var stave = new Vex.Flow.Stave(10, 0, 350);
-            stave.addClef("percussion")
-                .addTimeSignature(timesignature.beats +"/" +timesignature.value, 15)
-                .setContext(ctx).draw();
-
-
-            var highhatnotes = getBeats([highhatNotes, snarenotes], [hhNote, snareNote], snareNote, 1);
-
-            var kicknotes = getBeats([kickNotes], [kick], kickrest,-1);
-
-
-        var voice = new Vex.Flow.Voice({
-            num_beats: timesignature.beats,
-            beat_value: timesignature.value,
-            resolution: Vex.Flow.RESOLUTION
-        });
-        voice.addTickables([new Vex.Flow.BarNote()]);
-        voice.addTickables(highhatnotes.notes);
-
-
-        // Create a voice in 4/4
-        var voicebass = new Vex.Flow.Voice({
-            num_beats:timesignature.beats,
-            beat_value: timesignature.value,
-            resolution: Vex.Flow.RESOLUTION
-        });
-
-        voicebass.addTickables([new Vex.Flow.BarNote()]);
-        voicebass.addTickables(kicknotes.notes);
-
-        var formatter = new Vex.Flow.Formatter().joinVoices([voice, voicebass]).format([voice, voicebass], 293);
-
-        voice.draw(ctx, stave);
-        voicebass.draw(ctx, stave);
-
-
-        beams = highhatnotes.beams;
-        for (i = 0; i < beams.length; i++) {
-            beams[i].setContext(ctx).draw();
-        }
-
-        beams = kicknotes.beams;
-        for (i = 0; i < beams.length; i++) {
-            beams[i].setContext(ctx).draw();
-        }
-
-        }
-        $(function () {
-            var snareNote = "c/5";
-            var hhNote = "g/5/x2";
-            var kick = "f/4";
-            var kickrest = "e/4";
-
-            var highhatNotes = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
-            var snarenotes = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0];
-            var kicknotes = [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0];
             var commonTime = { beats: 4, value: 4 };
-
-
             var voicenotes = [
-                {
-                restnote: snareNote,
-                lines: [{ notes: highhatNotes, note: hhNote },
-                    { notes: snarenotes, note: snareNote }
-                ],
-                direction: 1
-                },
-                {
-                    restnote: kickrest,
-                    lines: [{ notes: kicknotes, note: kick }
-                    ],
-                    direction: -1
-                },
+              {
+                  restnote: snareNote,
+                  lines: [{ notes:v, note: hhNote },
+                      { notes: sd, note: snareNote }
+                  ],
+                  direction: 1
+              },
+              {
+                  restnote: kickrest,
+                  lines: [{ notes:bd, note: kick }
+                  ],
+                  direction: -1
+              },
             ];
 
 
             TuppleMeasure2($("#stave1")[0], commonTime, voicenotes);
+        }
 
-            TuppleMeasure($("#stave2")[0], [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], commonTime, [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0], snarenotes);
-            
-            //TuppleMeasure($("#stave3")[0], [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], timesignature, [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0]);
-
-            TuppleMeasure($("#stave3")[0], [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], { beats: 3, value: 4 }, [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0], snarenotes);
-
-        });
-
-        $(function() {
-            var line = function (name) {
-                this.name = name;
-                this.notes = ko.observableArray([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
-            }
-
-            // The view model is an abstract description of the state of the UI, but without any knowledge of the UI technology (HTML)
-            var viewModel = {
-                lines: [
-                    new line("hh"),
-                    new line("sd"),
-                    new line("bd"),
-                ],
-                showRenderTimes: ko.observable(false)
-            };
-
-            ko.applyBindings(viewModel);
-        });
     </script>
 
 </head>
 
 <body>
     <div style=""><canvas id="stave1" width=500 height=120></canvas></div>
-    <div style=""><canvas id="stave2" width=500 height=120></canvas></div>
-    <div style=""><canvas id="stave3" width=500 height=120></canvas></div>
     <div>
         <table>
             <tr>
-                <th>instr</th>
-                <th>1e&a</th>
+                <th></th>
+                <th>1</th>
+                <th>e</th>
+                <th>&</th>
+                <th>a</th>
                 <th>2</th>
+                <th>e</th>
+                <th>&</th>
+                <th>a</th>
                 <th>3</th>
+                <th>e</th>
+                <th>&</th>
+                <th>a</th>
                 <th>4</th>
+                <th>e</th>
+                <th>&</th>
+                <th>a</th>
             </tr>
-            <!-- ko foreach: { data: lines, as: 'line' } -->
-            <tr>
-                <td data-bind="text: line.name"></td>
-                <!-- ko foreach: {data:notes, as:'note'} -->
-                <td><input type="checkbox" data-bind="checked: note" /></td>
-                <!-- /ko -->
+            <tr id="hh">
+                <td >hh</td>
+                <td><input type="checkbox"/></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
             </tr>
-            <!-- /ko -->
-        </table>
+            <tr id="sd">
+                <td>sd</td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+            </tr>
+            <tr id="bd">
+                <td>bd</td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+                <td><input type="checkbox" /></td>
+            </tr>        </table>
     </div>
 </body>
 </html>
