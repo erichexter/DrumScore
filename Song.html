@@ -249,14 +249,15 @@
             <th>Section</th>    
             <th>Bars</th>
             <th>Groove</th>
-            <th>Queue</th>
+            <th>Vocals</th>
         </tr>
         <tbody data-bind="foreach: sections">
             <tr>
-                <td data-bind="text: title"></td>
-                <td data-bind="text: barCount"></td>
+                
+                <td contenteditable="true" data-bind="htmlValue: title"></td>
+                <td contenteditable="true" data-bind="htmlValue:  barCount"></td>
                 <td ><canvas data-bind="staff: groove" width=500 height=120></canvas></td>
-                <td data-bind="text: vocal"></td>
+                <td contenteditable="true" data-bind="htmlValue: vocal"></td>
             </tr>
         </tbody>
     </table>
@@ -405,6 +406,26 @@
                 TuppleMeasure2(element, commonTime, voicenotes);
                 // Grab some more data from another binding property
            
+            }
+        };
+
+        ko.bindingHandlers.htmlValue = {
+            init: function (element, valueAccessor, allBindingsAccessor) {
+                ko.utils.registerEventHandler(element, "blur", function () {
+                    var modelValue = valueAccessor();
+                    var elementValue = element.innerHTML;
+                    if (ko.isWriteableObservable(modelValue)) {
+                        modelValue(elementValue);
+                    }
+                    else { //handle non-observable one-way binding
+                        var allBindings = allBindingsAccessor();
+                        if (allBindings['_ko_property_writers'] && allBindings['_ko_property_writers'].htmlValue) allBindings['_ko_property_writers'].htmlValue(elementValue);
+                    }
+                })
+            },
+            update: function (element, valueAccessor) {
+                var value = ko.utils.unwrapObservable(valueAccessor()) || "";
+                element.innerHTML = value;
             }
         };
 
