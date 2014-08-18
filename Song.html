@@ -348,7 +348,7 @@
         var model = {
             sections: [{
                 title: "I", barCount: 4, groove: {
-                    hh: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    hh: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     sd: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                     bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
                 }, vocal: "Your Name is Higher"
@@ -371,6 +371,71 @@
 
         ko.bindingHandlers.staff = {
             init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+                $(element).click(function () {
+                    var value = ko.unwrap(valueAccessor()) || "";
+                    
+                    $(element).hide();
+                    var table = $('<table></table>').addClass('foo');
+                    var row = $('<tr>').append(
+                        $('<th></th><th>1</th><th>e</th><th>&</th><th>a</th><th>2</th><th>e</th><th>&</th><th>a</th><th>3</th><th>e</th><th>&</th><th>a</th><th>4</th><th>e</th><th>&</th><th>a</th>')
+                    );
+                    table.append(row);
+                    
+
+                    var row = $('<tr>').addClass('hh');
+                    row.append('<td></td>');
+                    var values = value.hh;
+                    for (j = 0; j < 16; j++) {
+                        var cell = $('<td><input type="checkbox"' + (values[j] == '1' ? ' checked ' : '') + ' /></td>');
+                        row.append(cell);
+                    }
+                    table.append(row);
+
+                    var row = $('<tr>').addClass('sd');
+                    row.append('<td></td>');
+                    var values = value.sd;
+                    for (j = 0; j < 16; j++) {
+                        var cell = $('<td><input type="checkbox"'+ (values[j]=='1'? ' checked ' :'') +' /></td>');
+                        row.append(cell);
+                    }                        
+                    table.append(row);
+
+                    var row = $('<tr>').addClass('bd');
+                    row.append('<td></td>');
+                    var values = value.bd;
+                    for (j = 0; j < 16; j++) {
+                        var cell = $('<td><input type="checkbox"' + (values[j] == '1' ? ' checked ' : '') + ' /></td>');
+                        row.append(cell);
+                    }
+                    table.append(row);
+
+                    
+                    $(element).parent().append(table);
+
+                    var row = $('<tr>').append(
+                        $('<td colspan="17"><button>save</button></td>')
+                    );
+                    table.append(row);
+
+                    table.find("button").click(function () {                        
+                        var value1 = valueAccessor();
+                        var valueUnwrapped = ko.unwrap(value1);
+                        
+                        valueUnwrapped.hh = table.find("tr.hh input").map(function () {
+                            return this.checked;
+                        }).get();
+                        valueUnwrapped.sd = table.find("tr.sd input").map(function () {
+                            return this.checked;
+                        }).get();
+                        valueUnwrapped.bd = table.find("tr.bd input").map(function () {
+                            return this.checked;
+                        }).get();
+                        //map the inputs into arrays and update the model.
+                        value1(valueUnwrapped);
+                        table.hide();
+                        $(element).show();
+                    });
+                });
                 // This will be called when the binding is first applied to an element
                 // Set up any initial state, event handlers, etc. here
             },
@@ -421,7 +486,7 @@
                         var allBindings = allBindingsAccessor();
                         if (allBindings['_ko_property_writers'] && allBindings['_ko_property_writers'].htmlValue) allBindings['_ko_property_writers'].htmlValue(elementValue);
                     }
-                })
+                });
             },
             update: function (element, valueAccessor) {
                 var value = ko.utils.unwrapObservable(valueAccessor()) || "";
