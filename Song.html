@@ -190,53 +190,6 @@
             }
 
         }
-       
-      
-        
-
-        $(function () {            
-            $("input").click(function() {
-                redraw();
-            });
-            redraw();
-        });
-
-
-        function redraw() {
-            var snareNote = "c/5";
-            var hhNote = "g/5/x2";
-            var kick = "f/4";
-            var kickrest = "e/4";
-            var v = $("#hh input").map(function () {
-                return this.checked;
-            }).get();
-            var sd = $("#sd input").map(function () {
-                return this.checked;
-            }).get();
-            var bd = $("#bd input").map(function () {
-                return this.checked;
-            }).get();
-
-            var commonTime = { beats: 4, value: 4 };
-            var voicenotes = [
-                {
-                    restnote: snareNote,
-                    lines: [{ notes:v, note: hhNote },
-                        { notes: sd, note: snareNote }
-                    ],
-                    direction: 1
-                },
-                {
-                    restnote: kickrest,
-                    lines: [{ notes:bd, note: kick }
-                    ],
-                    direction: -1
-                },
-            ];
-
-
-            TuppleMeasure2($("#stave1")[0], commonTime, voicenotes);
-        }
 
     </script>
 
@@ -260,111 +213,34 @@
                 <td contenteditable="true" data-bind="htmlValue: vocal"></td>
             </tr>
         </tbody>
+        <tfoot>
+            <tr><td colspan="4" >Add</td></tr>
+        </tfoot>
     </table>
-<div style=""><canvas id="stave1" width=500 height=120></canvas></div>
-                <div>
-                    <table>
-                        <tr>
-                            <th></th>
-                            <th>1</th>
-                            <th>e</th>
-                            <th>&</th>
-                            <th>a</th>
-                            <th>2</th>
-                            <th>e</th>
-                            <th>&</th>
-                            <th>a</th>
-                            <th>3</th>
-                            <th>e</th>
-                            <th>&</th>
-                            <th>a</th>
-                            <th>4</th>
-                            <th>e</th>
-                            <th>&</th>
-                            <th>a</th>
-                        </tr>
-                        <tr id="hh">
-                            <td>hh</td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                        </tr>
-                        <tr id="sd">
-                            <td>sd</td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                        </tr>
-                        <tr id="bd">
-                            <td>bd</td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                            <td><input type="checkbox" /></td>
-                        </tr>
-                    </table>
-                </div>
+
 
     
     <script>
         var model = {
             sections: [{
-                title: "I", barCount: 4, groove: {
+                title: "I", barCount: 4, groove: ko.observable( {
                     hh: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     sd: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                     bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                }, vocal: "Your Name is Higher"
+                }), vocal: "Your Name is Higher"
             }, {
-                title: "V1", barCount: 8, groove: {
+                title: "V1", barCount: 8, groove:ko.observable( {
                     hh: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
                     sd: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
                     bd: [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
-                }, vocal: "Your Name is Higher"
+                }), vocal: "Your Name is Higher"
             },
             {
-                title: "C", barCount: 8, groove: {
+                title: "C", barCount: 8, groove: ko.observable({
                     hh: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
                     sd: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
                     bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                }, vocal: "Your Name is Higher"
+                }), vocal: "Your Name is Higher"
             }],
             title: "Found in You."
         };
