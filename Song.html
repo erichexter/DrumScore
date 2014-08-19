@@ -41,7 +41,7 @@
     <script>
 $(function(){
         var model = {
-            sections: [{
+            sections: ko.observableArray([{
                 title: "I", barCount: 4, groove: ko.observable( {
                     hh: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     sd: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -60,7 +60,7 @@ $(function(){
                     sd: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
                     bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
                 }), vocal: "Your Name is Higher"
-            }],
+            }]),
             title: "Found in You."
         };
 
