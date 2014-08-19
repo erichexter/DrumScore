@@ -9,6 +9,7 @@
     <script type='text/javascript' src='knockout-3.1.0.js'></script>
     <script type='text/javascript' src='edit.js'></script>
     <script src="jquery-ui.min.js"></script>
+    <script src="https://rawgit.com/rniemeyer/knockout-sortable/master/build/knockout-sortable.js"></script>
 <link href="jquery-ui.min.css" rel="stylesheet">
 </head>
 
@@ -21,7 +22,7 @@
             <th>Groove</th>
             <th>Vocals</th>
         </tr>
-        <tbody id="song" data-bind="foreach: sections">
+        <tbody id="song" data-bind="sortable: sections">
             <tr>
                 
                 <td contenteditable="true" data-bind="htmlValue: title"></td>
@@ -32,7 +33,7 @@
             </tr>
         </tbody>
         <tfoot>
-            <tr><td colspan="4" >Add</td></tr>
+            <tr><td colspan="4" ><a href="#" data-bind="click: add" >Add</a></td></tr>
         </tfoot>
     </table>
 
@@ -40,8 +41,9 @@
     
     <script>
 $(function(){
-        var model = {
-            sections: ko.observableArray([{
+        var model = function() {
+	    var self=this;
+            self.sections= ko.observableArray([{
                 title: "I", barCount: 4, groove: ko.observable( {
                     hh: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     sd: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -60,12 +62,22 @@ $(function(){
                     sd: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
                     bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
                 }), vocal: "Your Name is Higher"
-            }]),
-            title: "Found in You."
+            }]);
+            self.title= "Found in You.";
+	    self.add = function(){
+			self.sections.push({
+                title: "section", barCount: 8, groove: ko.observable({
+                    hh: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                    sd: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                    bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                }), vocal: "vocal"
+            });
+		};
         };
 
+	ko.bindingHandlers.sortable.options.handle=".handle";
         ko.applyBindings(model);
-	$("#song").sortable({ handle: ".handle" });
+	//$("#song").sortable({ handle: ".handle" });
 });
     </script>
 </body>
