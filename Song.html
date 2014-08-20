@@ -48,29 +48,29 @@ $(function(){
                     hh: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     sd: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                     bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                }), vocal: "Your Name is Higher"
+                }), vocal: ko.observable("Your Name is Higher")
             }, {
                 title: "V1", barCount: 8, groove:ko.observable( {
                     hh: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
                     sd: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
                     bd: [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
-                }), vocal: "Your Name is Higher"
+                }), vocal: ko.observable("Your Name is Higher")
             },
             {
                 title: "C", barCount: 8, groove: ko.observable({
                     hh: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
                     sd: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
                     bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                }), vocal: "Your Name is Higher"
+                }), vocal: ko.observable("Your Name is Higher")
             }]);
-            self.title= "Found in You.";
+            self.title= ko.observable("Found in You.");
 	    self.add = function(){
 			self.sections.push({
-                title: "section", barCount: 8, groove: ko.observable({
+                title: ko.observable("section"), barCount: 8, groove: ko.observable({
                     hh: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
                     sd: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
                     bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                }), vocal: "vocal"
+                }), vocal: ko.observable("vocal")
             });
 		};
         };
