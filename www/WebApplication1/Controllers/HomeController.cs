@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -13,7 +14,7 @@ namespace WebApplication1.Controllers
         {
             using (var context = new DrumScoreContext())
             {
-                var scores=context.Scores.ToList();
+                var scores=context.Songs.ToList();
                 return View(scores);
             }            
         }
@@ -24,7 +25,7 @@ namespace WebApplication1.Controllers
             var model = new Song() {Title = "New song"};
             using (var context = new DrumScoreContext())
             {
-                context.Scores.Add(model);
+                context.Songs.Add(model);
                 context.SaveChanges();
             }
             return RedirectToAction("Index");

@@ -1,0 +1,80 @@
+﻿@model WebApplication1.Domain.Song
+@{
+    ViewBag.Title = "Edit";
+}
+
+@section scripts
+{
+    <script src="/Scripts/vexflow-min.js"></script></script>
+    <script type='text/javascript' src='/Scripts/knockout-3.1.0.js'></script>
+    <script type='text/javascript' src='/Scripts/edit.js'></script>
+    <script src="/Scripts/jquery-ui.min.js"></script>
+    <script src="https://rawgit.com/rniemeyer/knockout-sortable/master/build/knockout-sortable.js"></script>
+    <link href="/Scripts/jquery-ui.min.css" rel="stylesheet">
+
+
+<script>
+    $(function () {
+        var model = function () {
+            var self = this;
+            self.sections = ko.observableArray([{
+                title: "I", barCount: 4, groove: ko.observable({
+                    hh: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    sd: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                    bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                }), vocal: ko.observable("Your Name is Higher")
+            }, {
+                title: "V1", barCount: 8, groove: ko.observable({
+                    hh: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+                    sd: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                    bd: [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
+                }), vocal: ko.observable("Your Name is Higher")
+            },
+            {
+                title: "C", barCount: 8, groove: ko.observable({
+                    hh: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                    sd: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                    bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                }), vocal: ko.observable("Your Name is Higher")
+            }]);
+            self.title = ko.observable("Found in You.");
+            self.add = function () {
+                self.sections.push({
+                    title: ko.observable("section"), barCount: 8, groove: ko.observable({
+                        hh: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                        sd: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                        bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                    }), vocal: ko.observable("vocal")
+                });
+            };
+        };
+
+        ko.bindingHandlers.sortable.options.handle = ".handle";
+        ko.applyBindings(model);
+        //$("#song").sortable({ handle: ".handle" });
+    });
+</script>
+
+}
+<h2 data-bind="text:title"></h2>
+<table>
+    <tr>
+        <th>Section</th>
+        <th>Bars</th>
+        <th>Groove</th>
+        <th>Vocals</th>
+    </tr>
+    <tbody id="song" data-bind="sortable: sections">
+        <tr>
+
+            <td contenteditable="true" data-bind="htmlValue: title"></td>
+            <td contenteditable="true" data-bind="htmlValue:  barCount"></td>
+            <td><canvas data-bind="staff: groove" width=500 height=120></canvas></td>
+            <td contenteditable="true" data-bind="htmlValue: vocal"></td>
+            <td class="handle">move</td>
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr><td colspan="4"><a href="#" data-bind="click: add">Add</a></td></tr>
+    </tfoot>
+</table>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Security.Permissions;
 using System.Web;
@@ -8,30 +9,43 @@ using Newtonsoft.Json;
 
 namespace WebApplication1.Domain
 {
-    public class Song
+    public class Song:Entity
     {
-        public Guid Id { get; set; }
         public string Title { get; set; }
         public int Tempo { get; set; }
         public virtual List<Section> Sections { get; set; }
     }
 
-    public class Section
+    public class Entity
     {
+        public Entity()
+        {
+            Id = Guid.NewGuid();
+        }
+
         public Guid Id { get; set; }
+    }
+
+    public class Section : Entity
+    {
+        public Section()
+        {
+            Groove=new Groove(){HighHat = new bool[16],Kick = new bool[16],Snare = new bool[16]};
+        }
+
         public string Name { get; set; }
         public int Measures { get; set; }
-        protected string _groove;
+        public string GrooveString;
 
         public Groove Groove
         {
             get
             {
-                return _groove.ToGroove();
+                return GrooveString.ToGroove();
             } 
             set
             {
-                _groove = value.ToString();
+                GrooveString = value.ToString();
             }
         }
 

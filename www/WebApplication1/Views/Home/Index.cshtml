@@ -1,4 +1,4 @@
-﻿@model List<WebApplication1.Domain.Score>
+﻿@model List<WebApplication1.Domain.Song>
 @{
     ViewBag.Title = "Home Page";
 }
@@ -11,7 +11,7 @@
 
 @foreach (var model in Model)
 {
-    <ul>@(model.GetSong().Title)</ul>
+    <ul><a href="@Url.Action("Edit","Song",new {id=@model.Id})">@(model.Title)</a></ul>
 }
 <div class="row">
     <div class="col-md-4">
