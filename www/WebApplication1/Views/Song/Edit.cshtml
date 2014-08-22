@@ -10,53 +10,94 @@
     <script type='text/javascript' src='/Scripts/edit.js'></script>
     <script src="/Scripts/jquery-ui.min.js"></script>
     <script src="https://rawgit.com/rniemeyer/knockout-sortable/master/build/knockout-sortable.js"></script>
+    <script src="https://raw.githubusercontent.com/SteveSanderson/knockout.mapping/master/build/output/knockout.mapping-latest.js"></script>
     <link href="/Scripts/jquery-ui.min.css" rel="stylesheet">
 
 
-<script>
-    $(function () {
-        var model = function () {
-            var self = this;
-            self.sections = ko.observableArray([{
-                title: "I", barCount: 4, groove: ko.observable({
-                    hh: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    sd: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                    bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                }), vocal: ko.observable("Your Name is Higher")
-            }, {
-                title: "V1", barCount: 8, groove: ko.observable({
-                    hh: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-                    sd: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-                    bd: [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
-                }), vocal: ko.observable("Your Name is Higher")
-            },
-            {
-                title: "C", barCount: 8, groove: ko.observable({
-                    hh: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                    sd: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-                    bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                }), vocal: ko.observable("Your Name is Higher")
-            }]);
-            self.title = ko.observable("Found in You.");
-            self.add = function () {
-                self.sections.push({
-                    title: ko.observable("section"), barCount: 8, groove: ko.observable({
-                        hh: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                        sd: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-                        bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                    }), vocal: ko.observable("vocal")
-                });
-            };
-        };
+    <script>
+        $(function() {
 
-        ko.bindingHandlers.sortable.options.handle = ".handle";
-        ko.applyBindings(model);
-        //$("#song").sortable({ handle: ".handle" });
-    });
-</script>
+
+            function section(data) {
+                var self = this;
+                self.title = ko.observable(data.Name);
+                self.measures = ko.observable(data.Measure);
+                self.groove = ko.observable(groove(data));
+                self.vocal = ko.observable(data.Vocal);
+            }
+
+            function groove(data) {
+                var self = this;
+                self.hh = data.hh;
+                self.sd = data.sd;
+                self.bd = data.bd;
+            }
+
+            function SongViewModel() {
+                var self = this;
+
+                self.load = function() {
+                    $.ajax({
+                        type: "GET",
+                        url: "/api/Songs/@Model.Id",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function(data) {
+                            self.title(data.Title);
+                            self.id(data.Id);
+                            for (var i = 0; i < data.Sections.length; i++) {
+                                var sec = data.Sections[i];
+                                self.sections.push(section(sec));
+                            }
+                        },
+                        error: function(err) {
+                            alert("Error : " + err.status + "   " + err.statusText);
+                        }
+                    });
+                };
+
+                self.save = function () {
+                    $.ajax({
+                        type: "PUT",
+                        url: "/api/Songs/@Model.Id",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: ko.toJSON(self),
+                        success: function (data) {
+                        },
+                        error: function (err) {
+                            alert("Error : " + err.status + "   " + err.statusText);
+                        }
+                    });
+                };
+                self.sections = ko.observableArray();
+                self.title = ko.observable();
+                self.id = ko.observable();
+                self.add = function() {
+                    self.sections.push({
+                        title: ko.observable("section"),
+                        barCount: 8,
+                        groove: ko.observable({
+                            hh: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                            sd: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                            bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                        }),
+                        vocal: ko.observable("vocal")
+                    });
+                };
+            }
+
+            ;
+            var model = new SongViewModel();
+            model.load();
+            ko.bindingHandlers.sortable.options.handle = ".handle";
+            ko.applyBindings(model);
+            //$("#song").sortable({ handle: ".handle" });
+        });
+    </script>
 
 }
-<h2 data-bind="text:title"></h2>
+<h2 contenteditable="true" data-bind="htmlValue: title"></h2>
 <table>
     <tr>
         <th>Section</th>
@@ -68,13 +109,14 @@
         <tr>
 
             <td contenteditable="true" data-bind="htmlValue: title"></td>
-            <td contenteditable="true" data-bind="htmlValue:  barCount"></td>
+            <td contenteditable="true" data-bind="htmlValue:  measures"></td>
             <td><canvas data-bind="staff: groove" width=500 height=120></canvas></td>
             <td contenteditable="true" data-bind="htmlValue: vocal"></td>
             <td class="handle">move</td>
         </tr>
     </tbody>
     <tfoot>
-        <tr><td colspan="4"><a href="#" data-bind="click: add">Add</a></td></tr>
+        <tr><td colspan="4" align="center"><a href="#" data-bind="click: add">Add</a></td></tr>
     </tfoot>
 </table>
+<button data-bind="click: save">Save</button>

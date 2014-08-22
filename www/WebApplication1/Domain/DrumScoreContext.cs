@@ -11,7 +11,7 @@ namespace WebApplication1.Domain
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Section>().Ignore(t => t.Groove);
+            
             base.OnModelCreating(modelBuilder);
         }
 

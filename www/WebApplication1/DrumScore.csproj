@@ -172,8 +172,15 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\SongController.cs" />
+    <Compile Include="Controllers\SongsController.cs" />
     <Compile Include="Domain\DrumScoreContext.cs" />
+    <Compile Include="Domain\Entity.cs" />
+    <Compile Include="Domain\Groove.cs" />
+    <Compile Include="Domain\Section.cs" />
     <Compile Include="Domain\Song.cs" />
+    <Compile Include="Domain\StringExtensions.cs" />
+    <Compile Include="Domain\Voice.cs" />
+    <Compile Include="Domain\VoiceName.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -188,6 +195,10 @@
     <Compile Include="Migrations\201408211436143_foo.cs" />
     <Compile Include="Migrations\201408211436143_foo.Designer.cs">
       <DependentUpon>201408211436143_foo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408221305285_rework.cs" />
+    <Compile Include="Migrations\201408221305285_rework.Designer.cs">
+      <DependentUpon>201408221305285_rework.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -285,6 +296,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408211436143_foo.resx">
       <DependentUpon>201408211436143_foo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408221305285_rework.resx">
+      <DependentUpon>201408221305285_rework.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
