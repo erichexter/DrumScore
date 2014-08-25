@@ -33,7 +33,7 @@ namespace WebApplication1.Controllers
             {
                 return NotFound();
             }
-            var model = new {song.Id, song.Tempo,song.Title,Sections=song.Sections.OrderBy(s=>s.Order).Select(s=>new{s.Name,s.Measures,s.Vocal,s.Id})};
+            var model = new {song.Id, song.Tempo,song.Title,Sections=song.Sections.OrderBy(s=>s.Order).Select(s=>new{s.Name,s.Measures,s.Vocal,s.Id,Grooves=s.Grooves.OrderBy(g=>g.Order).ToList()})};
             return Ok(model);
         }
 
@@ -63,6 +63,8 @@ namespace WebApplication1.Controllers
             {
                 dbsong.Sections.Add(insert);
             }
+            db.Set<Voice>().RemoveRange(deletes.SelectMany(r => r.Grooves.SelectMany(g=>g.Top)));
+            db.Set<Voice>().RemoveRange(deletes.SelectMany(r => r.Grooves.SelectMany(g => g.Bottom)));
             db.Set<Groove>().RemoveRange(deletes.SelectMany(r => r.Grooves));
             db.Set<Section>().RemoveRange(deletes);
             db.Set<Section>().AddRange(inserts);

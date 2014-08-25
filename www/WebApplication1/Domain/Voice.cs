@@ -21,7 +21,12 @@ namespace WebApplication1.Domain
         {
             get
             {
-                return Array.ConvertAll(InternalData.Split(';'), bool.Parse);
+                if(InternalData!=null)
+                    return Array.ConvertAll(InternalData.Split(';'), bool.Parse);
+                else
+                {
+                    return  new bool[16];
+                }
             }
             set
             {

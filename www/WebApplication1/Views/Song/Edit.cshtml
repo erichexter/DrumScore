@@ -17,86 +17,127 @@
         $(function() {
 
 
-            function section(data) {
-                var self = this;
-                self.Id = ko.observable(data.Id);
-                self.Name = ko.observable(data.Name);
-                self.Measures = ko.observable(data.Measures);
-                //self.Grooves = ko.observableArray( [ko.observable(groove(data))]);
-                self.Vocal = ko.observable(data.Vocal);
-            }
+                function section(data) {
+                    var self = this;
+                    self.Id = ko.observable(data.Id);
+                    self.Name = ko.observable(data.Name);
+                    self.Measures = ko.observable(data.Measures);
+                    self.Grooves = ko.observableArray();
+                    self.Vocal = ko.observable(data.Vocal);
 
-            function groove(data) {
-                var self = this;
-                self.hh = data.hh;
-                self.sd = data.sd;
-                self.bd = data.bd;
-            }
-
-            function load (self) {
-                $.ajax({
-                    type: "GET",
-                    url: "/api/Songs/@Model.Id",
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function (data) {
-                        self.Title(data.Title);
-                        self.Id(data.Id);
-                        for (var i = 0; i < data.Sections.length; i++) {
-                            var sec = data.Sections[i];
-                            var sec1 = new section(sec);
-                            self.Sections.push(sec1);
-                        }
-                    },
-                    error: function (err) {
-                        alert("Error : " + err.status + "   " + err.statusText);
+                    for (var i = 0; i < data.Grooves.length; i++) {
+                        var g = data.Grooves[i];
+                        var g1 = new groove(g);
+                        self.Grooves.push(g1);
                     }
-                });
-            };
+                }
 
-            function SongViewModel() {
-                var self = this;
-                self.save = function () {
+                function groove(data) {
+                    var self = this;
+                    self.Top = ko.observableArray();
+                    self.Bottom = ko.observableArray();
+
+                    for (var i = 0; i < data.Top.length; i++) {
+                        var v = data.Top[i];
+                        var v1 = new voice(v);
+                        self.Top.push(v1);
+                    }
+
+                    for (var i = 0; i < data.Bottom.length; i++) {
+                        var v = data.Top[i];
+                        var v1 = new voice(v);
+                        self.Bottom.push(v1);
+                    }
+
+                }
+
+                function voice(data) {
+                    var self = this;
+                    self.notes = data.Notes;
+                    self.position = data.Position;
+                    self.name = data.Name;
+                }
+
+                function load(self) {
                     $.ajax({
-                        type: "PUT",
+                        type: "GET",
                         url: "/api/Songs/@Model.Id",
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
-                        data: ko.toJSON(self),
-                        success: function (data) {
-                            alert('done');
+                        success: function(data) {
+                            self.Title(data.Title);
+                            self.Id(data.Id);
+                            for (var i = 0; i < data.Sections.length; i++) {
+                                var sec = data.Sections[i];
+                                var sec1 = new section(sec);
+                                self.Sections.push(sec1);
+                            }
                         },
-                        error: function (err) {
+                        error: function(err) {
                             alert("Error : " + err.status + "   " + err.statusText);
                         }
                     });
                 };
-              
+
+                function SongViewModel() {
+                    var self = this;
+                    self.save = function() {
+                        $.ajax({
+                            type: "PUT",
+                            url: "/api/Songs/@Model.Id",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: ko.toJSON(self),
+                        success: function(data) {
+                            alert('done');
+                        },
+                        error: function(err) {
+                            alert("Error : " + err.status + "   " + err.statusText);
+                        }
+                    });
+                };
+
                 self.Sections = ko.observableArray();
                 self.Title = ko.observable();
                 self.Id = ko.observable();
-
 
                 self.add = function() {
                     self.Sections.push({
                         Name: ko.observable("section"),
                         Measures: ko.observable(8),
-                        Grooves: ko.observableArray([ko.observable({
-                            hh: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                            sd: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-                            bd: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                        })]),
-                        Vocal: ko.observable("vocal")
-                    });
-                };
-            }
-
-            ;
-            var model = new SongViewModel();
-            load(model);
-            ko.bindingHandlers.sortable.options.handle = ".handle";
-            ko.applyBindings(model);
-            //$("#song").sortable({ handle: ".handle" });
+                        Grooves: ko.observableArray([
+                                ko.observable({
+                                    Top: [
+                                        {
+                                            notes: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0] ,
+                                            name: "highhat",
+                                            position:9
+                                        },
+                                        {
+                                            notes: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+                                            name: "snare",
+                                            position:5
+                                        }
+                                    ],
+                                    Bottom: [
+                                        {
+                                            notes: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                            name: "kick",
+                                            position:2
+                                        }
+                                    ],                                                   
+                })]),
+            Vocal:
+        ko.observable("vocal")
+        });
+        };
+        }
+        ;
+        var model = new SongViewModel();
+        load(model);
+        ko.bindingHandlers.sortable.options.handle = ".handle";
+        ko.applyBindings(model);
+        //$("#song").sortable({ handle: ".handle" });
         });
     </script>
 
@@ -114,11 +155,11 @@
 
             <td contenteditable="true" data-bind="htmlValue: Name"></td>
             <td contenteditable="true" data-bind="htmlValue:  Measures"></td>
-            @*<td data-bind="foreach: Grooves">
+            <td data-bind="foreach: Grooves">
                 <canvas data-bind="staff: $data" width=500 height=120></canvas>
-            </td>*@
+            </td>
             <td contenteditable="true" data-bind="htmlValue: Vocal"></td>
-            <td class="handle">move</td>
+            <td class="handle"><span class="glyphicon glyphicon-align-justify"></span></td>
         </tr>
     </tbody>
     <tfoot>

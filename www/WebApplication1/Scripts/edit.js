@@ -192,7 +192,7 @@
 
                     var row = $('<tr>').addClass('hh');
                     row.append('<td></td>');
-                    var values = value.hh;
+                    var values = value.Top()[0].notes;
                     for (j = 0; j < 16; j++) {
                         var cell = $('<td><input type="checkbox"' + (values[j] == '1' ? ' checked ' : '') + ' /></td>');
                         row.append(cell);
@@ -201,7 +201,7 @@
 
                     var row = $('<tr>').addClass('sd');
                     row.append('<td></td>');
-                    var values = value.sd;
+                    var values = value.Top()[1].notes;
                     for (j = 0; j < 16; j++) {
                         var cell = $('<td><input type="checkbox"'+ (values[j]=='1'? ' checked ' :'') +' /></td>');
                         row.append(cell);
@@ -210,7 +210,7 @@
 
                     var row = $('<tr>').addClass('bd');
                     row.append('<td></td>');
-                    var values = value.bd;
+                    var values = value.Bottom()[0].notes;
                     for (j = 0; j < 16; j++) {
                         var cell = $('<td><input type="checkbox"' + (values[j] == '1' ? ' checked ' : '') + ' /></td>');
                         row.append(cell);
@@ -262,14 +262,14 @@
                 var voicenotes = [
                     {
                         restnote: snareNote,
-                        lines: [{ notes: valueUnwrapped.hh, note: hhNote },
-                            { notes: valueUnwrapped.sd, note: snareNote }
+                        lines: [{ notes: valueUnwrapped.Top()[0].notes, note: hhNote },
+                            { notes: valueUnwrapped.Top()[1].notes, note: snareNote }
                         ],
                         direction: 1
                     },
                     {
                         restnote: kickrest,
-                        lines: [{ notes: valueUnwrapped.bd, note: kick }
+                        lines: [{ notes: valueUnwrapped.Bottom()[0].notes, note: kick }
                         ],
                         direction: -1
                     },
