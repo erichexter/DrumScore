@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApplication1.Domain;
+using WebGrease.Css.Extensions;
 
 namespace WebApplication1.Controllers
 {
@@ -31,8 +33,8 @@ namespace WebApplication1.Controllers
             {
                 return NotFound();
             }
-
-            return Ok(song);
+            var model = new {song.Id, song.Tempo,song.Title,Sections=song.Sections.OrderBy(s=>s.Order).Select(s=>new{s.Name,s.Measures,s.Vocal,s.Id})};
+            return Ok(model);
         }
 
         // PUT: api/Songs/5
@@ -48,8 +50,33 @@ namespace WebApplication1.Controllers
             {
                 return BadRequest();
             }
+            var dbsong = db.Songs.Single(e => e.Id == id);
+            var updates = dbsong.Sections.Intersect(song.Sections).ToList();
+            var inserts = song.Sections.Except(updates).ToList();
+            var deletes = dbsong.Sections.Except(song.Sections).ToList();
 
-            db.Entry(song).State = EntityState.Modified;
+            foreach (var delete in deletes)
+            {
+                dbsong.Sections.Remove(delete);                
+            }
+            foreach (var insert in inserts)
+            {
+                dbsong.Sections.Add(insert);
+            }
+            db.Set<Groove>().RemoveRange(deletes.SelectMany(r => r.Grooves));
+            db.Set<Section>().RemoveRange(deletes);
+            db.Set<Section>().AddRange(inserts);
+            updates.ForEach(r=>db.Entry(r).State=EntityState.Modified);
+
+            
+            dbsong.Tempo = song.Tempo;
+            dbsong.Title = song.Title;
+
+            int order=0;
+            foreach (var section in song.Sections)
+            {
+                dbsong.Sections.Single(s => s.Id == section.Id).Order = order++;
+            }
 
             try
             {

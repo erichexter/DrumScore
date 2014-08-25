@@ -200,6 +200,10 @@
     <Compile Include="Migrations\201408221305285_rework.Designer.cs">
       <DependentUpon>201408221305285_rework.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408231414095_sectionorder.cs" />
+    <Compile Include="Migrations\201408231414095_sectionorder.Designer.cs">
+      <DependentUpon>201408231414095_sectionorder.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -299,6 +303,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408221305285_rework.resx">
       <DependentUpon>201408221305285_rework.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408231414095_sectionorder.resx">
+      <DependentUpon>201408231414095_sectionorder.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
