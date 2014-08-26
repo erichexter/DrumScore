@@ -192,7 +192,7 @@
 
                     var row = $('<tr>').addClass('hh');
                     row.append('<td></td>');
-                    var values = value.Top()[0].notes;
+                    var values = value.Top[0].notes;
                     for (j = 0; j < 16; j++) {
                         var cell = $('<td><input type="checkbox"' + (values[j] == '1' ? ' checked ' : '') + ' /></td>');
                         row.append(cell);
@@ -201,7 +201,7 @@
 
                     var row = $('<tr>').addClass('sd');
                     row.append('<td></td>');
-                    var values = value.Top()[1].notes;
+                    var values = value.Top[1].notes;
                     for (j = 0; j < 16; j++) {
                         var cell = $('<td><input type="checkbox"'+ (values[j]=='1'? ' checked ' :'') +' /></td>');
                         row.append(cell);
@@ -210,7 +210,7 @@
 
                     var row = $('<tr>').addClass('bd');
                     row.append('<td></td>');
-                    var values = value.Bottom()[0].notes;
+                    var values = value.Bottom[0].notes;
                     for (j = 0; j < 16; j++) {
                         var cell = $('<td><input type="checkbox"' + (values[j] == '1' ? ' checked ' : '') + ' /></td>');
                         row.append(cell);
@@ -229,17 +229,19 @@
                         var value1 = valueAccessor();
                         var valueUnwrapped = ko.unwrap(value1);
                         
-                        valueUnwrapped.hh = table.find("tr.hh input").map(function () {
+                        valueUnwrapped.Top[0].notes = table.find("tr.hh input").map(function () {
                             return this.checked;
                         }).get();
-                        valueUnwrapped.sd = table.find("tr.sd input").map(function () {
+                        valueUnwrapped.Top[1].notes = table.find("tr.sd input").map(function () {
                             return this.checked;
                         }).get();
-                        valueUnwrapped.bd = table.find("tr.bd input").map(function () {
+                        valueUnwrapped.Bottom[0].notes = table.find("tr.bd input").map(function () {
                             return this.checked;
                         }).get();
                         //map the inputs into arrays and update the model.
-                        value1(valueUnwrapped);
+                        //value1(valueUnwrapped);
+                        bindingContext.$parent.Grooves[bindingContext.$index()](valueUnwrapped);
+                        //value1(valueUnwrapped);
                         table.hide();
                         $(element).show();
                     });
@@ -262,14 +264,14 @@
                 var voicenotes = [
                     {
                         restnote: snareNote,
-                        lines: [{ notes: valueUnwrapped.Top()[0].notes, note: hhNote },
-                            { notes: valueUnwrapped.Top()[1].notes, note: snareNote }
+                        lines: [{ notes: valueUnwrapped.Top[0].notes, note: hhNote },
+                            { notes: valueUnwrapped.Top[1].notes, note: snareNote }
                         ],
                         direction: 1
                     },
                     {
                         restnote: kickrest,
-                        lines: [{ notes: valueUnwrapped.Bottom()[0].notes, note: kick }
+                        lines: [{ notes: valueUnwrapped.Bottom[0].notes, note: kick }
                         ],
                         direction: -1
                     },

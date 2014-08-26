@@ -22,20 +22,20 @@
                     self.Id = ko.observable(data.Id);
                     self.Name = ko.observable(data.Name);
                     self.Measures = ko.observable(data.Measures);
-                    self.Grooves = ko.observableArray();
+                    self.Grooves = new Array();
                     self.Vocal = ko.observable(data.Vocal);
 
                     for (var i = 0; i < data.Grooves.length; i++) {
                         var g = data.Grooves[i];
                         var g1 = new groove(g);
-                        self.Grooves.push(g1);
+                        self.Grooves.push(ko.observable(g1));
                     }
                 }
 
                 function groove(data) {
                     var self = this;
-                    self.Top = ko.observableArray();
-                    self.Bottom = ko.observableArray();
+                    self.Top = new Array();
+                    self.Bottom = new Array();
 
                     for (var i = 0; i < data.Top.length; i++) {
                         var v = data.Top[i];
@@ -44,7 +44,7 @@
                     }
 
                     for (var i = 0; i < data.Bottom.length; i++) {
-                        var v = data.Top[i];
+                        var v = data.Bottom[i];
                         var v1 = new voice(v);
                         self.Bottom.push(v1);
                     }
@@ -89,7 +89,7 @@
                         dataType: "json",
                         data: ko.toJSON(self),
                         success: function(data) {
-                            alert('done');
+                            
                         },
                         error: function(err) {
                             alert("Error : " + err.status + "   " + err.statusText);
@@ -105,7 +105,7 @@
                     self.Sections.push({
                         Name: ko.observable("section"),
                         Measures: ko.observable(8),
-                        Grooves: ko.observableArray([
+                        Grooves: [
                                 ko.observable({
                                     Top: [
                                         {
@@ -126,7 +126,7 @@
                                             position:2
                                         }
                                     ],                                                   
-                })]),
+                })],
             Vocal:
         ko.observable("vocal")
         });
@@ -137,7 +137,6 @@
         load(model);
         ko.bindingHandlers.sortable.options.handle = ".handle";
         ko.applyBindings(model);
-        //$("#song").sortable({ handle: ".handle" });
         });
     </script>
 

@@ -33,7 +33,7 @@ namespace WebApplication1.Controllers
             {
                 return NotFound();
             }
-            var model = new {song.Id, song.Tempo,song.Title,Sections=song.Sections.OrderBy(s=>s.Order).Select(s=>new{s.Name,s.Measures,s.Vocal,s.Id,Grooves=s.Grooves.OrderBy(g=>g.Order).ToList()})};
+            var model = new {song.Id, song.Tempo,song.Title,Sections=song.Sections.OrderBy(s=>s.Order).Select(s=>new{s.Name,s.Measures,s.Vocal,s.Id,Grooves=s.Grooves.OrderBy(g=>g.Order).Select(g=>new Groove(){Id=g.Id,Top = g.Top.OrderBy(t=>t.Position).ToList(),Bottom = g.Bottom.OrderBy(b=>b.Position).ToList()}).ToList()})};
             return Ok(model);
         }
 
@@ -78,6 +78,8 @@ namespace WebApplication1.Controllers
             foreach (var section in song.Sections)
             {
                 dbsong.Sections.Single(s => s.Id == section.Id).Order = order++;
+                var gorder = 0;
+                section.Grooves.ForEach(g=>g.Order=gorder++);
             }
 
             try
