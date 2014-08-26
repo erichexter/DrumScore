@@ -142,12 +142,12 @@
 
 }
 <h2 contenteditable="true" data-bind="htmlValue: Title"></h2>
-<table>
+<table class="table">
     <tr>
-        <th>Section</th>
+        <th></th>
         <th>Bars</th>
         <th>Groove</th>
-        <th>Vocals</th>
+        <th>Vocal Queue</th>
     </tr>
     <tbody id="song" data-bind="sortable: Sections">
         <tr>
@@ -158,7 +158,7 @@
                 <canvas data-bind="staff: $data" width=500 height=120></canvas>
             </td>
             <td contenteditable="true" data-bind="htmlValue: Vocal"></td>
-            <td class="handle"><span class="glyphicon glyphicon-align-justify"></span></td>
+            <td class="handle"><span class=" btn btn-lg glyphicon glyphicon-align-justify"></span></td>
         </tr>
     </tbody>
     <tfoot>
