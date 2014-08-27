@@ -1,5 +1,5 @@
         function flatenBeats(arrayOf16thNotes) {
-            var output = arrayOf16thNotes[0];
+            var output = arrayOf16thNotes[0].slice();
             for (var index = 0; index < arrayOf16thNotes[0].length; index++) {
                 for (var j = 0; j < arrayOf16thNotes.length; j++) {
                     if (arrayOf16thNotes[j][index] == 1) {
