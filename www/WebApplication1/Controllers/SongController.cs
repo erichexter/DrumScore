@@ -14,6 +14,16 @@ namespace WebApplication1.Controllers
         {
             return View();
         }
+        public ActionResult New()
+        {
+            var model = new Song() { Title = "New song" };
+            using (var context = new DrumScoreContext())
+            {
+                context.Songs.Add(model);
+                context.SaveChanges();
+            }
+            return RedirectToAction("Edit",new{id=model.Id});
+        }
 
         public ActionResult Edit(Guid Id)
         {

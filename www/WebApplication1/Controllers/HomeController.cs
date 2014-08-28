@@ -18,18 +18,6 @@ namespace WebApplication1.Controllers
                 return View(scores);
             }            
         }
-
-
-        public ActionResult New()
-        {
-            var model = new Song() {Title = "New song"};
-            using (var context = new DrumScoreContext())
-            {
-                context.Songs.Add(model);
-                context.SaveChanges();
-            }
-            return RedirectToAction("Index");
-        }
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";

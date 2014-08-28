@@ -4,9 +4,9 @@
 }
 
 <div class="jumbotron">
-    <h1>Drum Score</h1>
+    <h1>Drumly</h1>
     <p class="lead">Create quick song notations, its like cliff notes for drumset.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+    <p><a href="@Url.Action("New","Song")" class="btn btn-primary btn-lg">Create a new drumly, Now &raquo;</a></p>
 </div>
 
 @foreach (var model in Model)
@@ -19,20 +19,20 @@
         <p>
             
         </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+        <p><a class="btn btn-default" href="@Url.Action("New","Song")">Create &raquo;</a></p>
     </div>
     <div class="col-md-4">
         <h2>Save Set Lists</h2>
         <p>
             
         </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+        <p><a class="btn btn-default" href="#">Create Set List &raquo;</a></p>
     </div>
     <div class="col-md-4">
         <h2>Song Library</h2>
         <p>
             
         </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+        <p><a class="btn btn-default" href="#">Browse Songs &raquo;</a></p>
     </div>
 </div>
