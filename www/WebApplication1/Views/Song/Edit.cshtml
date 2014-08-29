@@ -30,6 +30,30 @@
                         var g1 = new groove(g);
                         self.Grooves.push(ko.observable(g1));
                     }
+
+                    self.add = function() {
+                        self.Grooves.push(ko.observable(new groove({
+                            Top: [
+                                {
+                                    notes: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                                    name: "highhat",
+                                    position: 9
+                                },
+                                {
+                                    notes: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                                    name: "snare",
+                                    position: 5
+                                }
+                            ],
+                            Bottom: [
+                                {
+                                    notes: [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                                    name: "kick",
+                                    position: 2
+                                }
+                            ],
+                        })));
+                    };
                 }
 
                 function groove(data) {
@@ -102,37 +126,38 @@
                 self.Id = ko.observable();
 
                 self.add = function() {
-                    self.Sections.push({
-                        Name: ko.observable("section"),
-                        Measures: ko.observable(8),
-                        Grooves: [
-                                ko.observable({
-                                    Top: [
-                                        {
-                                            notes: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0] ,
-                                            name: "highhat",
-                                            position:9
-                                        },
-                                        {
-                                            notes: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
-                                            name: "snare",
-                                            position:5
-                                        }
-                                    ],
-                                    Bottom: [
-                                        {
-                                            notes: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                                            name: "kick",
-                                            position:2
-                                        }
-                                    ],                                                   
-                })],
-            Vocal:
-        ko.observable("vocal")
-        });
-        };
-        }
-        ;
+                    self.Sections.push(new section({
+                        Name:"section",
+                        Measures:8,
+                        Grooves:[{
+                            Top: [
+                                {
+                                    Notes: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0] ,
+                                    Bame: "highhat",
+                                    Position:9
+                                },
+                                {
+                                    Notes: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+                                    Name: "snare",
+                                    Position:5
+                                }
+                            ],
+                            Bottom: [
+                                {
+                                    Notes: [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+                                    Name: "kick",
+                                    Position:2
+                                }
+                            ],                                                   
+                        }],
+                        Vocal:"vocal queue"
+                    }));};
+
+                    self.addgroove = function(data) {
+                        data.add();
+                    };
+
+                };
         var model = new SongViewModel();
         load(model);
         ko.bindingHandlers.sortable.options.handle = ".handle";
@@ -154,15 +179,18 @@
 
             <td contenteditable="true" data-bind="htmlValue: Name"></td>
             <td contenteditable="true" data-bind="htmlValue:  Measures"></td>
-            <td data-bind="foreach: Grooves">
+            <td valign="middle">
+                <!-- ko foreach: Grooves -->
                 <canvas data-bind="staff: $data" width=500 height=120></canvas>
+                <!-- /ko -->
+                <a href="#" class="btn btn-lg" data-bind="click: add">Add Measure</a>
             </td>
             <td contenteditable="true" data-bind="htmlValue: Vocal"></td>
             <td class="handle"><span class=" btn btn-lg glyphicon glyphicon-align-justify"></span></td>
         </tr>
     </tbody>
     <tfoot>
-        <tr><td colspan="4" align="center"><a href="#" data-bind="click: add">Add</a></td></tr>
+        <tr><td colspan="4" align="center"><a href="#" class="btn btn-lg" data-bind="click: add">Add Section</a></td></tr>
     </tfoot>
 </table>
 
