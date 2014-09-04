@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
-using WebApplication1.Domain;
+using Drumly.Domain;
 using WebGrease.Css.Extensions;
 
-namespace WebApplication1.Controllers
+namespace Drumly.Controllers
 {
     public class SongsController : ApiController
     {
-        private DrumScoreContext db = new DrumScoreContext();
+        private readonly DrumScoreContext db = new DrumScoreContext();
 
         // GET: api/Songs
         public IQueryable<Song> GetSongs()
@@ -25,20 +22,53 @@ namespace WebApplication1.Controllers
         }
 
         // GET: api/Songs/5
-        [ResponseType(typeof(Song))]
+        [ResponseType(typeof (Song))]
         public IHttpActionResult GetSong(Guid id)
         {
-            Song song = db.Songs.Include(s=>s.Sections).Single(s=>s.Id==id);
+            Song song = db.Songs.Include(s => s.Sections).Single(s => s.Id == id);
             if (song == null)
             {
                 return NotFound();
             }
-            var model = new {song.Id, song.Tempo,song.Title,Sections=song.Sections.OrderBy(s=>s.Order).Select(s=>new{s.Name,s.Measures,s.Vocal,s.Id,Grooves=s.Grooves.OrderBy(g=>g.Order).Select(g=>new Groove(){Id=g.Id,Top = g.Top.OrderBy(t=>t.Position).ToList(),Bottom = g.Bottom.OrderBy(b=>b.Position).ToList()}).ToList()})};
+            var model = new
+            {
+                song.Id,
+                song.Tempo,
+                song.Title,
+                Sections = song.Sections.OrderBy(s => s.Order).Select(s =>
+                    new
+                    {
+                        s.Name,
+                        s.Measures,
+                        s.Vocal,
+                        s.Id,
+                        Grooves = new
+                        {
+                            s.Grooves.Id,
+                            Measures = s.Grooves.Measures.OrderBy(m => m.Order).Select(m => new
+                            {
+                                m.Id,
+                                Bottom = m.Bottom.OrderBy(a => a.Position).ToList().Select(v=>new
+                                {
+                                    v.Position,
+                                    v.Id,
+                                    Beats=v.Beats.OrderBy(b=>b.Position)
+                                }),
+                                Top = m.Top.OrderBy(a => a.Position).ToList().Select(v => new
+                                {
+                                    v.Position,
+                                    v.Id,
+                                    Beats = v.Beats.OrderBy(b => b.Position)
+                                }),
+                            }).ToList()
+                        }
+                    }).ToList()
+            };
             return Ok(model);
         }
 
         // PUT: api/Songs/5
-        [ResponseType(typeof(void))]
+        [ResponseType(typeof (void))]
         public IHttpActionResult PutSong(Guid id, Song song)
         {
             if (!ModelState.IsValid)
@@ -50,36 +80,63 @@ namespace WebApplication1.Controllers
             {
                 return BadRequest();
             }
-            var dbsong = db.Songs.Single(e => e.Id == id);
-            var updates = dbsong.Sections.Intersect(song.Sections).ToList();
-            var inserts = song.Sections.Except(updates).ToList();
-            var deletes = dbsong.Sections.Except(song.Sections).ToList();
+            Song dbsong = db.Songs.Single(e => e.Id == id);
+            List<Section> updates = dbsong.Sections.Intersect(song.Sections).ToList();
+            List<Section> inserts = song.Sections.Except(updates).ToList();
+            List<Section> deletes = dbsong.Sections.Except(song.Sections).ToList();
 
-            foreach (var delete in deletes)
+            foreach (Section delete in deletes)
             {
-                dbsong.Sections.Remove(delete);                
+                dbsong.Sections.Remove(delete);
             }
-            foreach (var insert in inserts)
+            foreach (Section insert in inserts)
             {
                 dbsong.Sections.Add(insert);
             }
-            db.Set<Voice>().RemoveRange(deletes.SelectMany(r => r.Grooves.SelectMany(g=>g.Top)));
-            db.Set<Voice>().RemoveRange(deletes.SelectMany(r => r.Grooves.SelectMany(g => g.Bottom)));
-            db.Set<Groove>().RemoveRange(deletes.SelectMany(r => r.Grooves));
+
+            List<Voice> voices = deletes.SelectMany(r => r.Grooves.Measures.SelectMany(g => g.Top)).ToList();
+            voices.AddRange(deletes.SelectMany(r => r.Grooves.Measures.SelectMany(g => g.Bottom)).ToList());
+
+            List<Beat> beats = voices.Where(a => a.Beats != null).SelectMany(v => v.Beats).ToList();
+            db.Set<Beat>().RemoveRange(beats);
+            db.Set<Voice>().RemoveRange(voices);
+            db.Set<Measure>().RemoveRange(deletes.SelectMany(r => r.Grooves.Measures));
             db.Set<Section>().RemoveRange(deletes);
             db.Set<Section>().AddRange(inserts);
-            updates.ForEach(r=>db.Entry(r).State=EntityState.Modified);
+            updates.ForEach(r => db.Entry(r).State = EntityState.Modified);
 
-            
+
             dbsong.Tempo = song.Tempo;
             dbsong.Title = song.Title;
 
-            int order=0;
-            foreach (var section in song.Sections)
+            int order = 0;
+
+            foreach (Section section in song.Sections)
             {
                 dbsong.Sections.Single(s => s.Id == section.Id).Order = order++;
-                var gorder = 0;
-                section.Grooves.ForEach(g=>g.Order=gorder++);
+                int gorder = 0;
+                section.Grooves.Measures.ForEach(g => g.Order = gorder++);
+                int morder = 0;
+                foreach (Measure m in section.Grooves.Measures)
+                {
+                    m.Order = morder++;
+                    foreach (Voice b in m.Bottom)
+                    {
+                        int border = 0;
+                        foreach (Beat be in b.Beats)
+                        {
+                            be.Position = border++;
+                        }
+                    }
+                    foreach (Voice b in m.Top)
+                    {
+                        int border = 0;
+                        foreach (Beat be in b.Beats)
+                        {
+                            be.Position = border++;
+                        }
+                    }
+                }
             }
 
             try
@@ -92,17 +149,14 @@ namespace WebApplication1.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return StatusCode(HttpStatusCode.NoContent);
         }
 
         // POST: api/Songs
-        [ResponseType(typeof(Song))]
+        [ResponseType(typeof (Song))]
         public IHttpActionResult PostSong(Song song)
         {
             if (!ModelState.IsValid)
@@ -122,17 +176,14 @@ namespace WebApplication1.Controllers
                 {
                     return Conflict();
                 }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = song.Id }, song);
+            return CreatedAtRoute("DefaultApi", new {id = song.Id}, song);
         }
 
         // DELETE: api/Songs/5
-        [ResponseType(typeof(Song))]
+        [ResponseType(typeof (Song))]
         public IHttpActionResult DeleteSong(Guid id)
         {
             Song song = db.Songs.Find(id);

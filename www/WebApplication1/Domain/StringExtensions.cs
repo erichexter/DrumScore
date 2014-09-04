@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace WebApplication1.Domain
+namespace Drumly.Domain
 {
     public static class StringExtensions
     {

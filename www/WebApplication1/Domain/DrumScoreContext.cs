@@ -1,6 +1,6 @@
 ﻿using System.Data.Entity;
 
-namespace WebApplication1.Domain
+namespace Drumly.Domain
 {
     public class DrumScoreContext : DbContext
     {
@@ -11,7 +11,7 @@ namespace WebApplication1.Domain
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            
+            modelBuilder.Entity<Section>().HasOptional(d => d.Grooves);
             base.OnModelCreating(modelBuilder);
         }
 

@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="jquery-2.1.1.min.js"></script>
+    <script src="vexflow-min.js" ></script></script> 
+    <script type='text/javascript' src='knockout-3.1.0.js'></script>
+    <script src="www\WebApplication1\Scripts\groove.js">
+    </script>
+
+</head>
+
+<body>
+    <div style=""><canvas id="stave1" height=120></canvas></div>
+    
+    
+    <script language="javascript">
+        $(function () { 
+      
+        var g = new groove();
+        g.timeSignature.beats = 4;
+        g.timeSignature.value = 4;
+        g.bottomrest = "e/4";
+        g.toprest = "e/5";
+        g.addMeasure();
+        g.measure[0].addBottom();
+        g.measure[0].bottom[0].key=2;
+        g.measure[0].bottom[0].addBeat();
+        g.measure[0].bottom[0].addBeat();
+        g.measure[0].bottom[0].addBeat();
+        g.measure[0].bottom[0].addBeat();
+        g.measure[0].bottom[0].beats[0].notes = [1, 0, 0, 0];
+        g.measure[0].bottom[0].beats[1].notes = [0, 0, 0, 0];
+        g.measure[0].bottom[0].beats[2].notes = [1, 0, 1, 0];
+        g.measure[0].bottom[0].beats[3].notes = [0, 0, 0, 0];
+
+        g.measure[0].addTop();
+        g.measure[0].top[0].key = 9;
+        g.measure[0].top[0].addBeat();
+        g.measure[0].top[0].addBeat();
+        g.measure[0].top[0].addBeat();
+        g.measure[0].top[0].addBeat();
+        g.measure[0].top[0].beats[0].notes = [1, 0, 1, 0];
+        g.measure[0].top[0].beats[1].notes = [1, 0, 1, 0];
+        g.measure[0].top[0].beats[2].notes = [1, 0, 1, 0];
+        g.measure[0].top[0].beats[3].notes = [1, 0, 1, 0];
+
+        g.measure[0].addTop();
+        g.measure[0].top[1].key = 6;
+        g.measure[0].top[1].addBeat();
+        g.measure[0].top[1].addBeat();
+        g.measure[0].top[1].addBeat();
+        g.measure[0].top[1].addBeat();
+        g.measure[0].top[1].beats[0].notes = [0, 0, 0, 0];
+        g.measure[0].top[1].beats[1].notes = [1, 0, 0, 0];
+        g.measure[0].top[1].beats[2].notes = [0, 0, 0, 0];
+        g.measure[0].top[1].beats[3].notes = [1, 0, 0, 0];
+
+        g.addMeasure();
+        g.measure[1].addBottom();
+        g.measure[1].bottom[0].key = 2;
+        g.measure[1].bottom[0].addBeat();
+        g.measure[1].bottom[0].addBeat();
+        g.measure[1].bottom[0].addBeat();
+        g.measure[1].bottom[0].addBeat();
+        g.measure[1].bottom[0].beats[0].notes = [1, 1, 0, 0];
+        g.measure[1].bottom[0].beats[1].notes = [1, 0, 1, 1];
+        g.measure[1].bottom[0].beats[2].notes = [1, 1, 1, 0];
+        g.measure[1].bottom[0].beats[3].notes = [1, 1, 1, 1];
+
+        g.measure[1].addTop();
+        g.measure[1].top[0].key = 9;
+        g.measure[1].top[0].addBeat();
+        g.measure[1].top[0].addBeat();
+        g.measure[1].top[0].addBeat();
+        g.measure[1].top[0].addBeat();
+        g.measure[1].top[0].beats[0].notes = [0, 0, 0, 0];
+        g.measure[1].top[0].beats[1].notes = [1, 0, 0, 0];
+        g.measure[1].top[0].beats[2].notes = [0, 0, 0, 0];
+        g.measure[1].top[0].beats[3].notes = [1, 0, 0, 0];
+        draw($("#stave1")[0],g);
+        });
+    </script>
+</body>
+</html>

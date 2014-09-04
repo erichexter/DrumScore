@@ -184,25 +184,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201408211354341_init.cs" />
-    <Compile Include="Migrations\201408211354341_init.Designer.cs">
-      <DependentUpon>201408211354341_init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201408211428560_idgeneration.cs" />
-    <Compile Include="Migrations\201408211428560_idgeneration.Designer.cs">
-      <DependentUpon>201408211428560_idgeneration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201408211436143_foo.cs" />
-    <Compile Include="Migrations\201408211436143_foo.Designer.cs">
-      <DependentUpon>201408211436143_foo.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201408221305285_rework.cs" />
-    <Compile Include="Migrations\201408221305285_rework.Designer.cs">
-      <DependentUpon>201408221305285_rework.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201408231414095_sectionorder.cs" />
-    <Compile Include="Migrations\201408231414095_sectionorder.Designer.cs">
-      <DependentUpon>201408231414095_sectionorder.cs</DependentUpon>
+    <Compile Include="Migrations\201408312123569_init.cs" />
+    <Compile Include="Migrations\201408312123569_init.Designer.cs">
+      <DependentUpon>201408312123569_init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -223,6 +207,7 @@
     <None Include="Properties\PublishProfiles\drumscore.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\edit.js" />
+    <Content Include="Scripts\groove.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -292,20 +277,8 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201408211354341_init.resx">
-      <DependentUpon>201408211354341_init.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408211428560_idgeneration.resx">
-      <DependentUpon>201408211428560_idgeneration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408211436143_foo.resx">
-      <DependentUpon>201408211436143_foo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408221305285_rework.resx">
-      <DependentUpon>201408221305285_rework.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408231414095_sectionorder.resx">
-      <DependentUpon>201408231414095_sectionorder.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201408312123569_init.resx">
+      <DependentUpon>201408312123569_init.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WebApplication1.Domain
+namespace Drumly.Domain
 {
     public abstract class Entity
     {

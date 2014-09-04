@@ -1,14 +1,14 @@
 using System.Data.Entity.Infrastructure;
-using WebApplication1.Domain;
+using Drumly.Domain;
 
-namespace WebApplication1.Migrations
+namespace Drumly.Migrations
 {
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<WebApplication1.Domain.DrumScoreContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<DrumScoreContext>
     {
         public Configuration()
         {
@@ -18,7 +18,7 @@ namespace WebApplication1.Migrations
 
         }
 
-        protected override void Seed(WebApplication1.Domain.DrumScoreContext context)
+        protected override void Seed(DrumScoreContext context)
         {
             
             //  This method will be called after migrating to the latest version.

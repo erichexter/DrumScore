@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace WebApplication1.Domain
+namespace Drumly.Domain
 {
     public class Song : Entity
     {

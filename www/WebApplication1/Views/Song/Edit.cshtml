@@ -1,4 +1,4 @@
-﻿@model WebApplication1.Domain.Song
+﻿@model Drumly.Domain.Song
 @{
     ViewBag.Title = "Edit";
 }
@@ -9,111 +9,129 @@
     <script type='text/javascript' src='/Scripts/knockout-3.1.0.js'></script>
     <script type='text/javascript' src='/Scripts/edit.js'></script>
     <script src="/Scripts/jquery-ui.min.js"></script>
-    <script src="https://rawgit.com/rniemeyer/knockout-sortable/master/build/knockout-sortable.js"></script>
+    <script src="~/scripts/knockout-sortable.js"></script>
     <link href="/Scripts/jquery-ui.min.css" rel="stylesheet">
-
+    <script src="~/Scripts/groove.js"></script>
 
     <script>
         $(function() {
 
+            function section(data) {
+                var self = this;
+                self.Id = ko.observable(data.Id);
+                self.Name = ko.observable(data.Name);
+                self.Measures = ko.observable(data.Measures);
+                self.Grooves = ko.observable();
+                self.Vocal = ko.observable(data.Vocal);
 
-                function section(data) {
-                    var self = this;
-                    self.Id = ko.observable(data.Id);
-                    self.Name = ko.observable(data.Name);
-                    self.Measures = ko.observable(data.Measures);
-                    self.Grooves = new Array();
-                    self.Vocal = ko.observable(data.Vocal);
+                var g = new groove();
+                g.timeSignature.beats = 4;
+                g.timeSignature.value = 4;
+                g.bottomrest = "e/4";
+                g.toprest = "e/5";
 
-                    for (var i = 0; i < data.Grooves.length; i++) {
-                        var g = data.Grooves[i];
-                        var g1 = new groove(g);
-                        self.Grooves.push(ko.observable(g1));
-                    }
+                self.Grooves(g);
 
-                    self.add = function() {
-                        self.Grooves.push(ko.observable(new groove({
-                            Top: [
-                                {
-                                    notes: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                                    name: "highhat",
-                                    position: 9
-                                },
-                                {
-                                    notes: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-                                    name: "snare",
-                                    position: 5
-                                }
-                            ],
-                            Bottom: [
-                                {
-                                    notes: [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-                                    name: "kick",
-                                    position: 2
-                                }
-                            ],
-                        })));
-                    };
-                }
+                for (var i = 0; i < data.Grooves.Measures.length; i++) {
+                    g.addMeasure();
+                    var measure = data.Grooves.Measures[i];
 
-                function groove(data) {
-                    var self = this;
-                    self.Top = new Array();
-                    self.Bottom = new Array();
-
-                    for (var i = 0; i < data.Top.length; i++) {
-                        var v = data.Top[i];
-                        var v1 = new voice(v);
-                        self.Top.push(v1);
-                    }
-
-                    for (var i = 0; i < data.Bottom.length; i++) {
-                        var v = data.Bottom[i];
-                        var v1 = new voice(v);
-                        self.Bottom.push(v1);
-                    }
-
-                }
-
-                function voice(data) {
-                    var self = this;
-                    self.notes = data.Notes;
-                    self.position = data.Position;
-                    self.name = data.Name;
-                }
-
-                function load(self) {
-                    $.ajax({
-                        type: "GET",
-                        url: "/api/Songs/@Model.Id",
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        success: function(data) {
-                            self.Title(data.Title);
-                            self.Id(data.Id);
-                            for (var i = 0; i < data.Sections.length; i++) {
-                                var sec = data.Sections[i];
-                                var sec1 = new section(sec);
-                                self.Sections.push(sec1);
-                            }
-                        },
-                        error: function(err) {
-                            alert("Error : " + err.status + "   " + err.statusText);
+                    for (var j = 0; j < measure.Top.length; j++) {
+                        var v = measure.Top[j];
+                        g.measures[i].addTop();
+                        g.measures[i].top[j].position = v.Position;
+                        for (var k = 0; k < v.Beats.length; k++) {
+                            g.measures[i].top[j].addBeat();
+                            g.measures[i].top[j].beats[k].notes = v.Beats[k].Notes;
                         }
-                    });
-                };
+                    }
 
-                function SongViewModel() {
-                    var self = this;
-                    self.save = function() {
-                        $.ajax({
-                            type: "PUT",
-                            url: "/api/Songs/@Model.Id",
+                    for (var j = 0; j < measure.Bottom.length; j++) {
+                        var v = measure.Bottom[j];
+                        g.measures[i].addBottom();
+                        g.measures[i].bottom[j].position = v.Position;
+                        for (var k = 0; k < v.Beats.length; k++) {
+                            g.measures[i].bottom[j].addBeat();
+                            g.measures[i].bottom[j].beats[k].notes = v.Beats[k].Notes;
+                        }
+                    }
+                }
+
+                self.add = function() {
+                    var g = self.Grooves();
+                    g.addMeasure();
+                    var index = g.measures.length - 1;
+                    g.measures[index].addBottom();
+                    g.measures[index].bottom[0].position = 2;
+                    g.measures[index].bottom[0].addBeat();
+                    g.measures[index].bottom[0].addBeat();
+                    g.measures[index].bottom[0].addBeat();
+                    g.measures[index].bottom[0].addBeat();
+                    g.measures[index].bottom[0].beats[0].notes = [1, 0, 0, 0];
+                    g.measures[index].bottom[0].beats[1].notes = [0, 0, 0, 0];
+                    g.measures[index].bottom[0].beats[2].notes = [1, 0, 0, 0];
+                    g.measures[index].bottom[0].beats[3].notes = [0, 0, 0, 0];
+
+                    g.measures[index].addTop();
+                    g.measures[index].top[0].position = 9;
+                    g.measures[index].top[0].addBeat();
+                    g.measures[index].top[0].addBeat();
+                    g.measures[index].top[0].addBeat();
+                    g.measures[index].top[0].addBeat();
+                    g.measures[index].top[0].beats[0].notes = [1, 0, 1, 0];
+                    g.measures[index].top[0].beats[1].notes = [1, 0, 1, 0];
+                    g.measures[index].top[0].beats[2].notes = [1, 0, 1, 0];
+                    g.measures[index].top[0].beats[3].notes = [1, 0, 1, 0];
+
+                    g.measures[index].addTop();
+                    g.measures[index].top[1].position = 6;
+                    g.measures[index].top[1].addBeat();
+                    g.measures[index].top[1].addBeat();
+                    g.measures[index].top[1].addBeat();
+                    g.measures[index].top[1].addBeat();
+                    g.measures[index].top[1].beats[0].notes = [0, 0, 0, 0];
+                    g.measures[index].top[1].beats[1].notes = [1, 0, 0, 0];
+                    g.measures[index].top[1].beats[2].notes = [0, 0, 0, 0];
+                    g.measures[index].top[1].beats[3].notes = [1, 0, 0, 0];
+
+                    self.Grooves(g);
+                };
+            }
+
+            function load(self) {
+                $.ajax({
+                    type: "GET",
+                    url: "/api/Songs/@Model.Id",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(data) {
+                        self.Title(data.Title);
+                        self.Id(data.Id);
+                        for (var i = 0; i < data.Sections.length; i++) {
+                            var sec = data.Sections[i];
+                            var sec1 = new section(sec);
+                            self.Sections.push(sec1);
+                        }
+                    },
+                    error: function(err) {
+                        alert("Error : " + err.status + "   " + err.statusText);
+                    }
+                });
+            }
+
+            ;
+
+            function SongViewModel() {
+                var self = this;
+                self.save = function() {
+                    $.ajax({
+                        type: "PUT",
+                        url: "/api/Songs/@Model.Id",
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
                         data: ko.toJSON(self),
                         success: function(data) {
-                            
+
                         },
                         error: function(err) {
                             alert("Error : " + err.status + "   " + err.statusText);
@@ -127,42 +145,64 @@
 
                 self.add = function() {
                     self.Sections.push(new section({
-                        Name:"section",
-                        Measures:8,
-                        Grooves:[{
-                            Top: [
-                                {
-                                    Notes: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0] ,
-                                    Bame: "highhat",
-                                    Position:9
-                                },
-                                {
-                                    Notes: [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
-                                    Name: "snare",
-                                    Position:5
-                                }
-                            ],
-                            Bottom: [
-                                {
-                                    Notes: [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-                                    Name: "kick",
-                                    Position:2
-                                }
-                            ],                                                   
-                        }],
-                        Vocal:"vocal queue"
-                    }));};
-
-                    self.addgroove = function(data) {
-                        data.add();
-                    };
-
+                            Name: "section",
+                            Measures: 8,
+                            Grooves:
+                            {
+                                Measures:
+                                [{
+                                    Top: [
+                                        {
+                                            Beats: [
+                                                { Notes: [1, 0, 1, 0], },
+                                                { Notes: [1, 0, 1, 0], },
+                                                { Notes: [1, 0, 1, 0], },
+                                                { Notes: [1, 0, 1, 0], }
+                                            ],
+                                            
+                                            Position: 9
+                                        },
+                                        {
+                                            Beats: [
+                                                { Notes: [1, 0, 1, 0], },
+                                                { Notes: [1, 0, 1, 0], },
+                                                { Notes: [1, 0, 1, 0], },
+                                                { Notes: [1, 0, 1, 0], }
+                                            ],
+                                            Position: 6
+                                        }
+                                    ],
+                                    Bottom: [
+                                        {
+                                            Beats: [
+                                                { Notes: [1, 0, 1, 0], },
+                                                { Notes: [1, 0, 1, 0], },
+                                                { Notes: [1, 0, 1, 0], },
+                                                { Notes: [1, 0, 1, 0], }
+                                            ],
+                                            Position: 2
+                                        }
+                                    ],
+                                }]
+                            },
+                            Vocal: "vocal queue"
+                        }
+                    ));
                 };
-        var model = new SongViewModel();
-        load(model);
-        ko.bindingHandlers.sortable.options.handle = ".handle";
-        ko.applyBindings(model);
-        });
+
+                self.addgroove = function(data) {
+                    data.add();
+                };
+
+            }
+
+            ;
+            var model = new SongViewModel();
+            load(model);
+            ko.bindingHandlers.sortable.options.handle = ".handle";
+            ko.applyBindings(model);
+        }
+        );
     </script>
 
 }
@@ -180,9 +220,9 @@
             <td contenteditable="true" data-bind="htmlValue: Name"></td>
             <td contenteditable="true" data-bind="htmlValue:  Measures"></td>
             <td valign="middle">
-                <!-- ko foreach: Grooves -->
-                <canvas data-bind="staff: $data" width=500 height=120></canvas>
-                <!-- /ko -->
+                
+                <canvas data-bind="staff: Grooves" height=120> </canvas>
+                
                 <a href="#" class="btn btn-lg" data-bind="click: add">Add Measure</a>
             </td>
             <td contenteditable="true" data-bind="htmlValue: Vocal"></td>
