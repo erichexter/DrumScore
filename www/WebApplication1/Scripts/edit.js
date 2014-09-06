@@ -2,6 +2,7 @@
         ko.bindingHandlers.staff = {
             init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
                 $(element).click(function () {
+                    var deleted = new Array();
                     var groove = ko.unwrap(valueAccessor()) || "";
 
                     for (var m = 0; m < groove.measures.length; m++) {
@@ -42,19 +43,21 @@
                                     var cell = $('<td><input type="checkbox"' + (note == '1' ? ' checked ' : '') + ' /></td>');
                                     row.append(cell);
                                 }
-
                             }
                             table.append(row);
                         }
                         $(element).parent().append(table);
 
-                        //var row = $('<tr>').append($('<td colspan="17"><button>save</button></td>'));
-                        //table.append(row);
+                        table.append('<tr><td><button class="delete">delete</button></td></tr>');
+                        $(element).parent().find("button.delete").click(function () {
+                            var index = table.data("measure");
+                            deleted.push(index);
+                            table.remove();
+                        });
                     }
 
-                    $(element).parent().append('<button>save</button>');
-
-                    $(element).parent().find("button").click(function () {
+                    $(element).parent().append('<button class="save">save</button>');
+                    $(element).parent().find("button.save").click(function () {
                         var value1 = valueAccessor();
                         var valueUnwrapped = ko.unwrap(value1);
 
@@ -79,21 +82,13 @@
                                 }
                             });
                         });
+                        
+                        deleted.reverse();
+                        for (var d = 0; d < deleted.length; d++) {
+                            valueUnwrapped.measures.splice(deleted[d], 1);
+                        }
+
                         value1(valueUnwrapped);
-                        //valueUnwrapped.Top[0].notes = table.find("tr.hh input").map(function () {
-                        //    return this.checked;
-                        //}).get();
-                        //valueUnwrapped.Top[1].notes = table.find("tr.sd input").map(function () {
-                        //    return this.checked;
-                        //}).get();
-                        //valueUnwrapped.Bottom[0].notes = table.find("tr.bd input").map(function () {
-                        //    return this.checked;
-                        //}).get();
-                        //map the inputs into arrays and update the model.
-                        //value1(valueUnwrapped);
-                        //bindingContext.$parent.Grooves[bindingContext.$index()](valueUnwrapped);
-                        //value1(valueUnwrapped);
-                        //table.hide();
                         $(element).parent().find("table.measure").remove();
                         $(element).parent().find("button").remove();
                         $(element).show();
