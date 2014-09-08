@@ -76,13 +76,19 @@ function name(position) {
     if (position == 6)
         return "snare";
     if (position == 7)
-        return "tom 2";
+        return "snare Rimshot";
     if (position == 8)
-        return "tom 1";
+        return "tom 2";
     if (position == 9)
-        return "high hat";
+        return "tom 1";
     if (position == 10)
+        return "high hat";
+    if (position == 11)
+        return "high hat open";
+    if (position == 12)
         return "ride";
+    if (position == 13)
+        return "crash";
     return "";
 }
 function key(position) {
@@ -101,13 +107,21 @@ function key(position) {
     if (position == 6)
         return "c/5";
     if (position == 7)
-        return "d/5";
+        return "c/5/x2";
     if (position == 8)
-        return "e/5";
+        return "d/5";
     if (position == 9)
-        return "f/5/x2";
+        return "e/5";
     if (position == 10)
-        return "g/5"; /*
+        return "f/5/x2";
+    if (position == 11)
+        return "f/5/x3";
+    if (position == 12)
+        return "g/5";
+    if (position == 13)
+        return "g/5/x3";
+
+    /*
     1 e  
     2 f  kick
     3 g  
