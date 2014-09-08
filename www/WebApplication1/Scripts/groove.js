@@ -60,18 +60,42 @@ function voiceToBeats(voices, rest, b, direction) {
     }
     return bottom;
 }
-
+function name(position) {
+    if (position == 0)
+        return "d/4";
+    if (position == 1)
+        return "kick 2";
+    if (position == 2)
+        return "kick";
+    if (position == 3)
+        return "g/4";
+    if (position == 4)
+        return "floor tom";
+    if (position == 5)
+        return "b/5";
+    if (position == 6)
+        return "snare";
+    if (position == 7)
+        return "tom 2";
+    if (position == 8)
+        return "tom 1";
+    if (position == 9)
+        return "high hat";
+    if (position == 10)
+        return "ride";
+    return "";
+}
 function key(position) {
     if (position == 0)
-        return "e/4";
+        return "d/4";
     if (position == 1)
         return "e/4";
     if (position == 2)
         return "f/4";
     if (position == 3)
-        return "f/4";
+        return "g/4";
     if (position == 4)
-        return "a/5";
+        return "a/4";
     if (position == 5)
         return "b/5";
     if (position == 6)
@@ -90,8 +114,7 @@ function key(position) {
     4 a  floor tom
     5 b
     6 c  snare
-    7 d  tom 2
-    8 e  tom 1
+        
     9 f hh
     10 g */
 }

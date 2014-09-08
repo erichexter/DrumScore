@@ -6,21 +6,22 @@
                     var groove = ko.unwrap(valueAccessor()) || "";
 
                     for (var m = 0; m < groove.measures.length; m++) {
-                        var table = $('<table style="display:inline"></table>').addClass('measure').data('measure',m);
+                        var table = $('<table style="border:1; display:inline"></table>').addClass('measure').data('measure',m);
                         var measure = groove.measures[m];
                         
                         var row = $('<tr>').append(
-                            $('<th></th><th>1</th><th>e</th><th>&</th><th>a</th><th>2</th><th>e</th><th>&</th><th>a</th><th>3</th><th>e</th><th>&</th><th>a</th><th>4</th><th>e</th><th>&</th><th>a</th>')
+                            $('<th></th><th></th><th>1</th><th>e</th><th>&</th><th>a</th><th>&nbsp;</th><th>2</th><th>e</th><th>&</th><th>a</th><th>&nbsp;</th><th>3</th><th>e</th><th>&</th><th>a</th><th>&nbsp;</th><th>4</th><th>e</th><th>&</th><th>a</th>')
                         );
                         table.append(row);
                         measure.top.sort(function (a, b) { return b.position - a.position; });
                         var top = measure.top;
                         for (var v = 0; v < top.length; v++) {
                             var voice = top[v];
-                            var row = $('<tr>').addClass("position").data("voice", "top").data("index",v);
+                            var row = $('<tr>').addClass("position").data("voice", "top").data("index", v);
+                            row.append('<td>' + name(voice.position) + '</td>');
                             for (var b = 0; b < voice.beats.length; b++) {
                                 var beat = voice.beats[b];
-                                row.append('<td> </td>');
+                                row.append('<td></td>');
                                 for (var n=0; n < beat.notes.length; n++) {
                                     var note = beat.notes[n];
                                     var cell = $('<td><input type="checkbox"' + (note == '1' ? ' checked ' : '') + ' /></td>');
@@ -34,10 +35,11 @@
                         var bottom = measure.bottom;
                         for (var v = 0; v < bottom.length; v++) {
                             var voice = bottom[v];
-                            var row = $('<tr>').addClass("position").data("voice", "bottom").data("index",v);
+                            var row = $('<tr>').addClass("position").data("voice", "bottom").data("index", v);
+                            row.append('<td>' + name(voice.position) + '</td>');
                             for (var b = 0; b < voice.beats.length; b++) {
                                 var beat = voice.beats[b];
-                                row.append('<td> </td>');
+                                row.append('<td></td>');
                                 for (var n = 0; n < beat.notes.length; n++) {
                                     var note = beat.notes[n];
                                     var cell = $('<td><input type="checkbox"' + (note == '1' ? ' checked ' : '') + ' /></td>');

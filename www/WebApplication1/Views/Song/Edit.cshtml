@@ -94,6 +94,40 @@
                     g.measures[index].top[1].beats[2].notes = [0, 0, 0, 0];
                     g.measures[index].top[1].beats[3].notes = [1, 0, 0, 0];
 
+                    g.measures[index].addTop();
+                    g.measures[index].top[2].position = 4;
+                    g.measures[index].top[2].addBeat();
+                    g.measures[index].top[2].addBeat();
+                    g.measures[index].top[2].addBeat();
+                    g.measures[index].top[2].addBeat();
+                    g.measures[index].top[2].beats[0].notes = [0, 0, 0, 0];
+                    g.measures[index].top[2].beats[1].notes = [1, 0, 0, 0];
+                    g.measures[index].top[2].beats[2].notes = [0, 0, 0, 0];
+                    g.measures[index].top[2].beats[3].notes = [1, 0, 0, 0];
+
+                    g.measures[index].addTop();
+                    g.measures[index].top[3].position = 7;
+                    g.measures[index].top[3].addBeat();
+                    g.measures[index].top[3].addBeat();
+                    g.measures[index].top[3].addBeat();
+                    g.measures[index].top[3].addBeat();
+                    g.measures[index].top[3].beats[0].notes = [0, 0, 0, 0];
+                    g.measures[index].top[3].beats[1].notes = [1, 0, 0, 0];
+                    g.measures[index].top[3].beats[2].notes = [0, 0, 0, 0];
+                    g.measures[index].top[3].beats[3].notes = [1, 0, 0, 0];
+
+                    g.measures[index].addTop();
+                    g.measures[index].top[4].position = 8;
+                    g.measures[index].top[4].addBeat();
+                    g.measures[index].top[4].addBeat();
+                    g.measures[index].top[4].addBeat();
+                    g.measures[index].top[4].addBeat();
+                    g.measures[index].top[4].beats[0].notes = [0, 0, 0, 0];
+                    g.measures[index].top[4].beats[1].notes = [1, 0, 0, 0];
+                    g.measures[index].top[4].beats[2].notes = [0, 0, 0, 0];
+                    g.measures[index].top[4].beats[3].notes = [1, 0, 0, 0];
+
+
                     self.Grooves(g);
                 };
             }
@@ -223,16 +257,16 @@
                 
                 <canvas data-bind="staff: Grooves" height=120> </canvas>
                 
-                <a href="#" class="btn btn-lg" data-bind="click: add">Add Measure</a>
+                <a href="#" class="btn btn-lg hidden-print" data-bind="click: add">Add Measure</a>
             </td>
             <td contenteditable="true" data-bind="htmlValue: Vocal"></td>
-            <td class="handle"><span class=" btn btn-lg glyphicon glyphicon-align-justify"></span></td>
+            <td class="handle hidden-print"><span class=" btn btn-lg glyphicon glyphicon-align-justify"></span></td>
         </tr>
     </tbody>
-    <tfoot>
+    <tfoot class="hidden-print">
         <tr><td colspan="4" align="center"><a href="#" class="btn btn-lg" data-bind="click: add">Add Section</a></td></tr>
     </tfoot>
 </table>
 
 
-<button data-bind="click: save">Save</button>
+<button class="hidden-print" data-bind="click: save">Save</button>
