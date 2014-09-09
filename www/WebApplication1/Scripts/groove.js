@@ -22,14 +22,22 @@ function voiceToBeats(voices, rest, b, direction) {
         }
     }
 
-    var bottom = new Array();
+    var combineNotes = new Array();
     for (z = 0; z < notes.length; z++) {
         var duration = 1 / 16;
         if (notes[z] == 1) {
+            var accent = false;
             var keys = new Array();
             for (k = 0; k < voices.length; k++) {
                 if (voices[k].beats[b].notes[z] == 1) {
-                    keys.push(key(voices[k].position));
+                    var key1 = key(voices[k].position);
+                    if (key1 != null) {
+                        keys.push(key1);
+                    }
+                }
+                if (voices[k].beats[b].notes[z] == 1 && voices[k].position == 15) {
+                    accent = true;
+                    
                 }
             }
 
@@ -43,7 +51,11 @@ function voiceToBeats(voices, rest, b, direction) {
                 z = y;
             }
             var dstring = durationstring(duration);
-            bottom.push(new Vex.Flow.StaveNote({ keys: keys, duration: dstring, stem_direction: direction }));
+            var staveNote = new Vex.Flow.StaveNote({ keys: keys, duration: dstring, stem_direction: direction });
+            if (accent) {
+                staveNote.addArticulation(0, new Vex.Flow.Articulation("a^").setPosition(4));
+            }
+            combineNotes.push(staveNote);
         } else {
             for (y = z + 1; y < notes.length; y++) {
                 if (notes[y] == 0) {
@@ -54,11 +66,11 @@ function voiceToBeats(voices, rest, b, direction) {
                 z = y;
             }
             var dstring = durationstring(duration);
-            bottom.push(new Vex.Flow.StaveNote({ keys: [rest], duration: dstring + "r", stem_direction: direction }));
+            combineNotes.push(new Vex.Flow.StaveNote({ keys: [rest], duration: dstring + "r", stem_direction: direction }));
         }
 
     }
-    return bottom;
+    return combineNotes;
 }
 function name(position) {
     if (position == 0)
@@ -76,19 +88,23 @@ function name(position) {
     if (position == 6)
         return "snare";
     if (position == 7)
-        return "snare Rimshot";
+        return "snare Rim shot";
     if (position == 8)
         return "tom 2";
     if (position == 9)
         return "tom 1";
     if (position == 10)
-        return "high hat";
+        return "tom rims";
     if (position == 11)
-        return "high hat open";
+        return "hihat closed";
     if (position == 12)
-        return "ride";
+        return "hihat open";
     if (position == 13)
+        return "ride";
+    if (position == 14)
         return "crash";
+    if (position == 15)
+        return "accents";
     return "";
 }
 function key(position) {
@@ -113,14 +129,16 @@ function key(position) {
     if (position == 9)
         return "e/5";
     if (position == 10)
-        return "f/5/x2";
+        return "e/5/x2";
     if (position == 11)
-        return "f/5/x3";
+        return "f/5/x2";
     if (position == 12)
-        return "g/5";
+        return "f/5/x3";
     if (position == 13)
+        return "g/5";
+    if (position == 14)
         return "g/5/x3";
-
+    return null;
     /*
     1 e  
     2 f  kick
