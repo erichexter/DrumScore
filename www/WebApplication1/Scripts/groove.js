@@ -36,8 +36,7 @@ function voiceToBeats(voices, rest, b, direction) {
                     }
                 }
                 if (voices[k].beats[b].notes[z] == 1 && voices[k].position == 15) {
-                    accent = true;
-                    
+                    accent = true;                    
                 }
             }
 
@@ -53,7 +52,7 @@ function voiceToBeats(voices, rest, b, direction) {
             var dstring = durationstring(duration);
             var staveNote = new Vex.Flow.StaveNote({ keys: keys, duration: dstring, stem_direction: direction });
             if (accent) {
-                staveNote.addArticulation(0, new Vex.Flow.Articulation("a^").setPosition(4));
+                staveNote.addArticulation(0, new Vex.Flow.Articulation("a>").setPosition(3));
             }
             combineNotes.push(staveNote);
         } else {
@@ -153,12 +152,12 @@ function key(position) {
 
 function draw(canvas, groove) {
 
-    canvas.width = 275 * groove.measures.length;
+    canvas.width = 300 * groove.measures.length ;
     var renderer = new Vex.Flow.Renderer(canvas, Vex.Flow.Renderer.Backends.CANVAS);
     var ctx = renderer.getContext();
-    var stave = new Vex.Flow.Stave(10, 0, canvas.width - 20);
-    stave.addClef("percussion")
-        .addTimeSignature(groove.timeSignature.beats + "/" + groove.timeSignature.value, 15);
+    var stave = new Vex.Flow.Stave(0, 8, canvas.width-2);
+    //stave.addClef("percussion");
+        //.addTimeSignature(groove.timeSignature.beats + "/" + groove.timeSignature.value, 10);
     stave.setContext(ctx).draw();
 
     var beams = new Array();
@@ -169,9 +168,12 @@ function draw(canvas, groove) {
         beat_value: groove.timeSignature.value,
         resolution: Vex.Flow.RESOLUTION
     });
-    for (var m = 0; m < groove.measures.length; m++) {
-        voice.addTickables([new Vex.Flow.BarNote()]);
-        voice.setStrict(false);
+    voice.setStrict(false);
+    for (var m = 0; m < groove.measures.length; m++)
+    {
+        if (m > 0) {
+            voice.addTickables([new Vex.Flow.BarNote()]);
+        }
         var measure = groove.measures[m];
         for (var b = 0; b < groove.timeSignature.beats; b++) {
             var bottom = voiceToBeats(measure.bottom, groove.bottomrest, b, -1);
@@ -187,9 +189,11 @@ function draw(canvas, groove) {
         beat_value: groove.timeSignature.value,
         resolution: Vex.Flow.RESOLUTION
     });
+    voice1.setStrict(false);
     for (var m = 0; m < groove.measures.length; m++) {
-        voice1.addTickables([new Vex.Flow.BarNote()]);
-        voice1.setStrict(false);
+        if (m > 0) {
+            voice1.addTickables([new Vex.Flow.BarNote()]);
+        }
         var measure = groove.measures[m];
         for (var b = 0; b < groove.timeSignature.beats; b++) {
             var top = voiceToBeats(measure.top, groove.toprest, b, 1);
