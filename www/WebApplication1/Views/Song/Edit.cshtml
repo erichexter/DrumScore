@@ -1,273 +1,15 @@
 ﻿@model Drumly.Domain.Song
-@{
-    ViewBag.Title = "Edit";
-}
 
 @section scripts
 {
-    <script src="/Scripts/vexflow-min.js"></script></script>
-    <script type='text/javascript' src='/Scripts/knockout-3.1.0.js'></script>
-    <script type='text/javascript' src='/Scripts/edit.js'></script>
-    <script src="/Scripts/jquery-ui.min.js"></script>
-    <script src="~/scripts/knockout-sortable.js"></script>
-    <link href="/Scripts/jquery-ui.min.css" rel="stylesheet">
-    <script src="~/Scripts/groove.js"></script>
-
+    <script src="~/bundles/app"></script>
+    <link href="~/Scripts/jquery-ui.min.css" rel="stylesheet">
     <script>
         $(function() {
 
-            function section(data) {
-                var self = this;
-                self.Id = ko.observable(data.Id);
-                self.Name = ko.observable(data.Name);
-                self.Measures = ko.observable(data.Measures);
-                self.Grooves = ko.observable();
-                self.Vocal = ko.observable(data.Vocal);
 
-                var g = new groove();
-                g.timeSignature.beats = 4;
-                g.timeSignature.value = 4;
-                g.bottomrest = "e/4";
-                g.toprest = "e/5";
-
-                self.Grooves(g);
-
-                for (var i = 0; i < data.Grooves.Measures.length; i++) {
-                    g.addMeasure();
-                    var measure = data.Grooves.Measures[i];
-
-                    for (var j = 0; j < measure.Top.length; j++) {
-                        var v = measure.Top[j];
-                        g.measures[i].addTop();
-                        g.measures[i].top[j].position = v.Position;
-                        for (var k = 0; k < v.Beats.length; k++) {
-                            g.measures[i].top[j].addBeat();
-                            g.measures[i].top[j].beats[k].notes = v.Beats[k].Notes;
-                        }
-                    }
-
-                    for (var j = 0; j < measure.Bottom.length; j++) {
-                        var v = measure.Bottom[j];
-                        g.measures[i].addBottom();
-                        g.measures[i].bottom[j].position = v.Position;
-                        for (var k = 0; k < v.Beats.length; k++) {
-                            g.measures[i].bottom[j].addBeat();
-                            g.measures[i].bottom[j].beats[k].notes = v.Beats[k].Notes;
-                        }
-                    }
-                }
-
-                self.add = function() {
-                    var g = self.Grooves();
-                    g.addMeasure();
-                    var index = g.measures.length - 1;
-                    g.measures[index].addBottom();
-                    g.measures[index].bottom[0].position = 2;//kick
-                    g.measures[index].bottom[0].addBeat();
-                    g.measures[index].bottom[0].addBeat();
-                    g.measures[index].bottom[0].addBeat();
-                    g.measures[index].bottom[0].addBeat();
-                    g.measures[index].bottom[0].beats[0].notes = [1, 0, 0, 0];
-                    g.measures[index].bottom[0].beats[1].notes = [0, 0, 0, 0];
-                    g.measures[index].bottom[0].beats[2].notes = [1, 0, 0, 0];
-                    g.measures[index].bottom[0].beats[3].notes = [0, 0, 0, 0];
-
-
-                    g.measures[index].addTop();
-                    g.measures[index].top[0].position = 4;//floor tom
-                    g.measures[index].top[0].addBeat();
-                    g.measures[index].top[0].addBeat();
-                    g.measures[index].top[0].addBeat();
-                    g.measures[index].top[0].addBeat();
-                    g.measures[index].top[0].beats[0].notes = [0, 0, 0, 0];
-                    g.measures[index].top[0].beats[1].notes = [0, 0, 0, 0];
-                    g.measures[index].top[0].beats[2].notes = [0, 0, 0, 0];
-                    g.measures[index].top[0].beats[3].notes = [0, 0, 0, 0];
-
-                    g.measures[index].addTop();
-                    g.measures[index].top[1].position = 6;//snare
-                    g.measures[index].top[1].addBeat();
-                    g.measures[index].top[1].addBeat();
-                    g.measures[index].top[1].addBeat();
-                    g.measures[index].top[1].addBeat();
-                    g.measures[index].top[1].beats[0].notes = [0, 0, 0, 0];
-                    g.measures[index].top[1].beats[1].notes = [1, 0, 0, 0];
-                    g.measures[index].top[1].beats[2].notes = [0, 0, 0, 0];
-                    g.measures[index].top[1].beats[3].notes = [1, 0, 0, 0];
-
-                    g.measures[index].addTop();
-                    g.measures[index].top[2].position = 7;//rim shot
-                    g.measures[index].top[2].addBeat();
-                    g.measures[index].top[2].addBeat();
-                    g.measures[index].top[2].addBeat();
-                    g.measures[index].top[2].addBeat();
-                    g.measures[index].top[2].beats[0].notes = [0, 0, 0, 0];
-                    g.measures[index].top[2].beats[1].notes = [0, 0, 0, 0];
-                    g.measures[index].top[2].beats[2].notes = [0, 0, 0, 0];
-                    g.measures[index].top[2].beats[3].notes = [0, 0, 0, 0];
-
-                    g.measures[index].addTop();
-                    g.measures[index].top[3].position = 8;//tom 2
-                    g.measures[index].top[3].addBeat();
-                    g.measures[index].top[3].addBeat();
-                    g.measures[index].top[3].addBeat();
-                    g.measures[index].top[3].addBeat();
-                    g.measures[index].top[3].beats[0].notes = [0, 0, 0, 0];
-                    g.measures[index].top[3].beats[1].notes = [0, 0, 0, 0];
-                    g.measures[index].top[3].beats[2].notes = [0, 0, 0, 0];
-                    g.measures[index].top[3].beats[3].notes = [0, 0, 0, 0];
-
-                    g.measures[index].addTop();
-                    g.measures[index].top[4].position = 9;//tom1
-                    g.measures[index].top[4].addBeat();
-                    g.measures[index].top[4].addBeat();
-                    g.measures[index].top[4].addBeat();
-                    g.measures[index].top[4].addBeat();
-                    g.measures[index].top[4].beats[0].notes = [1, 0, 1, 0];
-                    g.measures[index].top[4].beats[1].notes = [1, 0, 1, 0];
-                    g.measures[index].top[4].beats[2].notes = [1, 0, 1, 0];
-                    g.measures[index].top[4].beats[3].notes = [1, 0, 1, 0];
-
-                    g.measures[index].addTop();
-                    g.measures[index].top[5].position = 10;//tom1 rims
-                    g.measures[index].top[5].addBeat();
-                    g.measures[index].top[5].addBeat();
-                    g.measures[index].top[5].addBeat();
-                    g.measures[index].top[5].addBeat();
-                    g.measures[index].top[5].beats[0].notes = [0, 0, 0, 0];
-                    g.measures[index].top[5].beats[1].notes = [0, 0, 0, 0];
-                    g.measures[index].top[5].beats[2].notes = [0, 0, 0, 0];
-                    g.measures[index].top[5].beats[3].notes = [0, 0, 0, 0];
-
-                    g.measures[index].addTop();
-                    g.measures[index].top[6].position = 11;//hihat closed
-                    g.measures[index].top[6].addBeat();
-                    g.measures[index].top[6].addBeat();
-                    g.measures[index].top[6].addBeat();
-                    g.measures[index].top[6].addBeat();
-                    g.measures[index].top[6].beats[0].notes = [0, 0, 0, 0];
-                    g.measures[index].top[6].beats[1].notes = [0, 0, 0, 0];
-                    g.measures[index].top[6].beats[2].notes = [0, 0, 0, 0];
-                    g.measures[index].top[6].beats[3].notes = [0, 0, 0, 0];
-
-                    g.measures[index].addTop();
-                    g.measures[index].top[7].position = 12;//hihat open
-                    g.measures[index].top[7].addBeat();
-                    g.measures[index].top[7].addBeat();
-                    g.measures[index].top[7].addBeat();
-                    g.measures[index].top[7].addBeat();
-                    g.measures[index].top[7].beats[0].notes = [0, 0, 0, 0];
-                    g.measures[index].top[7].beats[1].notes = [0, 0, 0, 0];
-                    g.measures[index].top[7].beats[2].notes = [0, 0, 0, 0];
-                    g.measures[index].top[7].beats[3].notes = [0, 0, 0, 0];
-
-                    g.measures[index].addTop();
-                    g.measures[index].top[8].position = 13;//ride
-                    g.measures[index].top[8].addBeat();
-                    g.measures[index].top[8].addBeat();
-                    g.measures[index].top[8].addBeat();
-                    g.measures[index].top[8].addBeat();
-                    g.measures[index].top[8].beats[0].notes = [0, 0, 0, 0];
-                    g.measures[index].top[8].beats[1].notes = [0, 0, 0, 0];
-                    g.measures[index].top[8].beats[2].notes = [0, 0, 0, 0];
-                    g.measures[index].top[8].beats[3].notes = [0, 0, 0, 0];
-
-
-                    g.measures[index].addTop();
-                    g.measures[index].top[9].position = 14;//crash
-                    g.measures[index].top[9].addBeat();
-                    g.measures[index].top[9].addBeat();
-                    g.measures[index].top[9].addBeat();
-                    g.measures[index].top[9].addBeat();
-                    g.measures[index].top[9].beats[0].notes = [0, 0, 0, 0];
-                    g.measures[index].top[9].beats[1].notes = [0, 0, 0, 0];
-                    g.measures[index].top[9].beats[2].notes = [0, 0, 0, 0];
-                    g.measures[index].top[9].beats[3].notes = [0, 0, 0, 0];
-
-                    g.measures[index].addTop();
-                    g.measures[index].top[10].position = 15;//accent
-                    g.measures[index].top[10].addBeat();
-                    g.measures[index].top[10].addBeat();
-                    g.measures[index].top[10].addBeat();
-                    g.measures[index].top[10].addBeat();
-                    g.measures[index].top[10].beats[0].notes = [0, 0, 0, 0];
-                    g.measures[index].top[10].beats[1].notes = [0, 0, 0, 0];
-                    g.measures[index].top[10].beats[2].notes = [0, 0, 0, 0];
-                    g.measures[index].top[10].beats[3].notes = [0, 0, 0, 0];
-
-
-                    //.addArticulation(0, new Vex.Flow.Articulation("a@a").setPosition(3))
-
-                    self.Grooves(g);
-                };
-            }
-
-            function load(self) {
-                $.ajax({
-                    type: "GET",
-                    url: "/api/Songs/@Model.Id",
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function(data) {
-                        self.Title(data.Title);
-                        self.Id(data.Id);
-                        for (var i = 0; i < data.Sections.length; i++) {
-                            var sec = data.Sections[i];
-                            var sec1 = new section(sec);
-                            self.Sections.push(sec1);
-                        }
-                    },
-                    error: function(err) {
-                        alert("Error : " + err.status + "   " + err.statusText);
-                    }
-                });
-            }
-
-            ;
-
-            function SongViewModel() {
-                var self = this;
-                self.save = function() {
-                    $.ajax({
-                        type: "PUT",
-                        url: "/api/Songs/@Model.Id",
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        data: ko.toJSON(self),
-                        success: function(data) {
-
-                        },
-                        error: function(err) {
-                            alert("Error : " + err.status + "   " + err.statusText);
-                        }
-                    });
-                };
-
-                self.Sections = ko.observableArray();
-                self.Title = ko.observable();
-                self.Id = ko.observable();
-
-                self.add = function() {
-                    var section1 = new section({
-                            Name: "section",
-                            Measures: 8,                           
-                            Vocal: "vocal queue",
-                            Grooves:{Measures:[]}
-                        }
-                    );
-                    section1.add();
-                    self.Sections.push(section1);
-                };
-
-                self.addgroove = function(data) {
-                    data.add();
-                };
-
-            }
-
-            ;
             var model = new SongViewModel();
-            load(model);
+            model.load('@Model.Id');
             ko.bindingHandlers.sortable.options.handle = ".handle";
             ko.applyBindings(model);
         }
@@ -285,13 +27,10 @@
     </tr>
     <tbody id="song" data-bind="sortable: Sections">
         <tr>
-
             <td contenteditable="true" data-bind="htmlValue: Name"></td>
             <td contenteditable="true" data-bind="htmlValue:  Measures"></td>
             <td valign="middle">
-                
                 <canvas data-bind="staff: Grooves" height=120> </canvas>
-                
                 <a href="#" class="btn btn-lg hidden-print" data-bind="click: add">Add Measure</a>
             </td>
             <td contenteditable="true" data-bind="htmlValue: Vocal"></td>
@@ -302,6 +41,4 @@
         <tr><td colspan="4" align="center"><a href="#" class="btn btn-lg" data-bind="click: add">Add Section</a></td></tr>
     </tfoot>
 </table>
-
-
 <button class="hidden-print" data-bind="click: save">Save</button>

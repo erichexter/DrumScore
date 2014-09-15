@@ -27,6 +27,16 @@ namespace Drumly
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
 
+            bundles.Add(new ScriptBundle("~/bundles/app").Include(
+"~/Scripts/vexflow-min.js",
+"~/Scripts/knockout-3.1.0.js",
+"~/Scripts/edit.js",
+"~/Scripts/jquery-ui.min.js",
+"~/scripts/knockout-sortable.js",
+"~/Scripts/groove.js",
+"~/Scripts/store.min.js"));
+
+
             // Set EnableOptimizations to false for debugging. For more information,
             // visit http://go.microsoft.com/fwlink/?LinkId=301862
             BundleTable.EnableOptimizations = true;

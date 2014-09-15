@@ -1,0 +1,74 @@
+﻿@section scripts
+{
+    <script src="~/bundles/app"></script>
+    <link href="~/Scripts/jquery-ui.min.css" rel="stylesheet">
+    <script>
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+            return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+
+
+        function SetViewModel() {
+            var self = this;
+            self.title = ko.observable();
+            self.songs = ko.observableArray();
+            self.id = ko.observable();
+            self.allsongs = new Array();
+
+            self.load = function (id) {
+                var app = store.get('app');
+                
+                for (var i = 0; i < app.sets.length; i++) {
+                    if (app.sets[i].id === id) {
+                        var set = app.sets[i];
+                        self.title(set.title);
+                    }
+                }
+                
+                for (var i = 0; i < app.songs.length; i++) {
+                    self.allsongs.push(app.songs[i]);
+                }
+            
+                var data = store.get(id);
+                if (data != undefined && data.songs != undefined) {
+                    for (i = 0; i < data.songs.length; i++) {
+                        var set1 = data.songs[i];
+                        self.songs.push(new song(set1.title, set1.id));
+                    }
+                }
+            };
+
+            self.addSong = function(song) {
+                self.songs.push(new song(song.title, song.id));
+            };
+        }
+
+        $(function () {
+            var id = getParameterByName('id');
+            console.log(id);
+            
+            var model = new SetViewModel();
+            model.load(id);
+            ko.applyBindings(model);
+        });
+
+    </script>
+}
+<h2><span contenteditable data-bind="text:title"></span></h2>
+<ul data-bind="foreach: songs">
+    <li><a data-bind="attr: { href: '/app/songs?id='+id() }"><span data-bind="text:title"></span></a></li>
+</ul>
+<div class="dropdown hidden-print">
+    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+        Add Song
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" data-bind="foreach: allsongs">
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="#" data-bind="text:title ; click:$parent.addSong"></a></li>
+    </ul>
+</div>
+
+

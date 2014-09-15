@@ -1,0 +1,37 @@
+﻿
+@section scripts
+{
+    <script src="~/bundles/app"></script>
+    <link href="~/Scripts/jquery-ui.min.css" rel="stylesheet">
+    <script>
+
+      
+
+        function save(data) {
+            var jsonData = ko.toJS(data);
+            store.set('app', jsonData);
+        }
+
+        $(function() {
+            var model = new AppViewModel();
+            model.load();
+            model.onchange = function() { save(model); };
+            ko.applyBindings(model);
+        });
+
+    </script>
+}
+<h2>My Drumly</h2>
+
+<h3>Sets</h3>
+<ul data-bind="foreach: sets">
+    <li><a data-bind="attr: { href: '/app/sets?id='+id() }"><span data-bind="text:title"></span></a></li>
+</ul>
+<a href="#" class="btn btn-sm hidden-print" data-bind="click: addSet">Add Set</a>
+
+
+<h3>Songs</h3>
+<ul data-bind="foreach: songs">
+    <li><a data-bind="attr: { href: '/app/songs?id='+id() }"><span data-bind="text:title"></span></a></li>
+</ul>
+<a href="#" class="btn btn-sm hidden-print" data-bind="click: addSong">Add Song</a>
