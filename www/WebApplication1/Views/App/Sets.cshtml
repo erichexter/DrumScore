@@ -19,6 +19,7 @@
             self.allsongs = new Array();
 
             self.load = function (id) {
+                self.id(id);
                 var app = store.get('app');
                 
                 for (var i = 0; i < app.sets.length; i++) {
@@ -41,8 +42,13 @@
                 }
             };
 
-            self.addSong = function(song) {
-                self.songs.push(new song(song.title, song.id));
+            self.save = function () {
+                store.set(self.id(), ko.toJS(self));
+            };
+
+            self.addSong = function(data) {
+                self.songs.push(new song(data.title, data.id));
+                self.save();
             };
         }
 
@@ -52,13 +58,14 @@
             
             var model = new SetViewModel();
             model.load(id);
+            ko.bindingHandlers.sortable.afterMove = model.save;
             ko.applyBindings(model);
         });
 
     </script>
 }
 <h2><span contenteditable data-bind="text:title"></span></h2>
-<ul data-bind="foreach: songs">
+<ul data-bind="sortable: songs">
     <li><a data-bind="attr: { href: '/app/songs?id='+id() }"><span data-bind="text:title"></span></a></li>
 </ul>
 <div class="dropdown hidden-print">
@@ -67,7 +74,7 @@
         <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" data-bind="foreach: allsongs">
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="#" data-bind="text:title ; click:$parent.addSong"></a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="#" data-bind="text:title ,click:$parent.addSong"></a></li>
     </ul>
 </div>
 
