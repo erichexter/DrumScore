@@ -52,6 +52,14 @@
             };
         }
 
+        function displaySong(song) {
+            var data = store.get(song.id());
+            var songVM = new SongViewModel();
+            songVM.create(data);
+        }
+
+        
+
         $(function () {
             var id = getParameterByName('id');
             console.log(id);
@@ -66,7 +74,7 @@
 }
 <h2><span contenteditable data-bind="text:title"></span></h2>
 <ul data-bind="sortable: songs">
-    <li><a data-bind="attr: { href: '/app/songs?id='+id() }"><span data-bind="text:title"></span></a></li>
+    <li><a href="#" data-bind="click:displaySong"><span data-bind="text:title"></span></a></li>
 </ul>
 <div class="dropdown hidden-print">
     <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">

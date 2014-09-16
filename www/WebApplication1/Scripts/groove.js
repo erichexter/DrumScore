@@ -94,13 +94,7 @@ function SongViewModel() {
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function(data) {
-                self.Title(data.Title);
-                self.Id(data.Id);
-                for (var i = 0; i < data.Sections.length; i++) {
-                    var sec = data.Sections[i];
-                    var sec1 = new section(sec);
-                    self.Sections.push(sec1);
-                }
+                self.create(data);
             },
             error: function(err) {
                 alert("Error : " + err.status + "   " + err.statusText);
@@ -108,6 +102,15 @@ function SongViewModel() {
         });
     };
 
+    self.create = function(data) {
+        self.Title(data.Title);
+        self.Id(data.Id);
+        for (var i = 0; i < data.Sections.length; i++) {
+            var sec = data.Sections[i];
+            var sec1 = new section(sec);
+            self.Sections.push(sec1);
+        }
+    };
 
     self.Sections = ko.observableArray();
     self.Title = ko.observable();
