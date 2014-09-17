@@ -17,8 +17,12 @@ function AppViewModel() {
     self.addSong = function () {
         var name = window.prompt("Song Name", "New Song " + (self.songs().length + 1));
         if (name != null) {
-            self.songs.push(new song(name));
+            var index = new song(name);
+            self.songs.push(index);
             self.onchange();
+            var s = new SongViewModel();
+            s.id(index.id());
+            s.save();
         }
     };
     self.addSet = function () {
@@ -43,6 +47,11 @@ function AppViewModel() {
                 self.songs.push(new song(set1.title, set1.id));
             }
         }
+    };
+
+    self.save = function() {
+            var jsonData = ko.toJS(self);
+            store.set('app', jsonData);
     };
 }
 
@@ -72,74 +81,93 @@ function set(title, id) {
 function SongViewModel() {
     var self = this;
     self.save = function () {
-        $.ajax({
-            type: "PUT",
-            url: "/api/Songs/"+self.Id(),
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: ko.toJSON(self),
-            success: function (data) {
-
-            },
-            error: function (err) {
-                alert("Error : " + err.status + "   " + err.statusText);
-            }
-        });
+        store.set(self.id(), ko.toJS(self));
+        //$.ajax({
+        //    type: "PUT",
+        //    url: "/api/Songs/"+self.Id(),
+        //    contentType: "application/json; charset=utf-8",
+        //    dataType: "json",
+        //    data: ko.toJSON(self),
+        //    success: function (data) {
+                
+        //        var app = new AppViewModel();
+        //        app.load();
+        //        var exists = false;
+        //        if (app.songs != undefined) {
+        //            for (i = 0; i < app.songs.length; i++) {                        
+        //                var s = app.songs[i];
+        //                if (s.id === self.id()) {
+        //                    exists = true;
+        //                }                        
+        //            }
+        //            if (!exists) {
+        //                app.songs.push(new song(self.Title(), self.Id()));
+        //                app.save();
+        //            }
+        //        }
+                
+        //    },
+        //    error: function (err) {
+        //        alert("Error : " + err.status + "   " + err.statusText);
+        //    }
+        //});
     };
 
     self.load = function load(id) {
-        $.ajax({
-            type: "GET",
-            url: "/api/Songs/" + id,
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function(data) {
-                self.create(data);
-            },
-            error: function(err) {
-                alert("Error : " + err.status + "   " + err.statusText);
-            }
-        });
+        var data = store.get(id);
+        self.create(data);
+        //$.ajax({
+        //    type: "GET",
+        //    url: "/api/Songs/" + id,
+        //    contentType: "application/json; charset=utf-8",
+        //    dataType: "json",
+        //    success: function(data) {
+        //        self.create(data);
+        //    },
+        //    error: function(err) {
+        //        alert("Error : " + err.status + "   " + err.statusText);
+        //    }
+        //});
     };
 
     self.create = function(data) {
-        self.Title(data.Title);
-        self.Id(data.Id);
-        for (var i = 0; i < data.Sections.length; i++) {
-            var sec = data.Sections[i];
+        self.title(data.title);
+        self.id(data.id);
+        for (var i = 0; i < data.sections.length; i++) {
+            var sec = data.sections[i];
             var sec1 = new section(sec);
-            self.Sections.push(sec1);
+            self.sections.push(sec1);
         }
     };
 
-    self.Sections = ko.observableArray();
-    self.Title = ko.observable();
-    self.Id = ko.observable();
+    self.sections = ko.observableArray();
+    self.title = ko.observable();
+    self.id = ko.observable();
 
     self.add = function () {
         var section1 = new section({
-            Name: "section",
-            Measures: 8,
-            Vocal: "vocal queue",
-            Grooves: { Measures: [] }
+            name: "section",
+            measures: 8,
+            vocal: "vocal queue",
+            grooves: { measures: [] }
         }
         );
         section1.add();
-        self.Sections.push(section1);
+        self.sections.push(section1);
     };
 
-    self.addgroove = function (data) {
+    self.addGroove = function (data) {
         data.add();
     };
 
 }
 function section(data) {
     var self = this;
-    self.Id = ko.observable(data.Id);
-    self.Name = ko.observable(data.Name);
-    self.Measures = ko.observable(data.Measures);
-    self.Grooves = ko.observable();
-    self.Vocal = ko.observable(data.Vocal);
+    self.id = ko.observable(data.id);
+    self.name = ko.observable(data.name);
+    self.measures = ko.observable(data.measures);
+    self.grooves = ko.observable();
+    self.vocal = ko.observable(data.vocal);
 
     var g = new groove();
     g.timeSignature.beats = 4;
@@ -147,11 +175,11 @@ function section(data) {
     g.bottomrest = "e/4";
     g.toprest = "e/5";
 
-    self.Grooves(g);
+    self.grooves(g);
 
-    for (var i = 0; i < data.Grooves.Measures.length; i++) {
+    for (var i = 0; i < data.grooves.measures.length; i++) {
         g.addMeasure();
-        var measure = data.Grooves.Measures[i];
+        var measure = data.grooves.measures[i];
 
         for (var j = 0; j < measure.Top.length; j++) {
             var v = measure.Top[j];
@@ -175,7 +203,7 @@ function section(data) {
     }
 
     self.add = function () {
-        var g = self.Grooves();
+        var g = self.grooves();
         g.addMeasure();
         var index = g.measures.length - 1;
         g.measures[index].addBottom();
@@ -315,7 +343,7 @@ function section(data) {
 
         //.addArticulation(0, new Vex.Flow.Articulation("a@a").setPosition(3))
 
-        self.Grooves(g);
+        self.grooves(g);
     };
 }
 

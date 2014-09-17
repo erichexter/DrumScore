@@ -179,6 +179,7 @@
     <Compile Include="Domain\Groove.cs" />
     <Compile Include="Domain\Section.cs" />
     <Compile Include="Domain\Song.cs" />
+    <Compile Include="Domain\SongStorage.cs" />
     <Compile Include="Domain\StringExtensions.cs" />
     <Compile Include="Domain\Voice.cs" />
     <Compile Include="Domain\VoiceName.cs" />
@@ -188,6 +189,10 @@
     <Compile Include="Migrations\201408312123569_init.cs" />
     <Compile Include="Migrations\201408312123569_init.Designer.cs">
       <DependentUpon>201408312123569_init.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409170412584_SongStorage.cs" />
+    <Compile Include="Migrations\201409170412584_SongStorage.Designer.cs">
+      <DependentUpon>201409170412584_SongStorage.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -287,6 +292,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201408312123569_init.resx">
       <DependentUpon>201408312123569_init.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409170412584_SongStorage.resx">
+      <DependentUpon>201409170412584_SongStorage.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

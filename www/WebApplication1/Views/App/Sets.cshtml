@@ -1,6 +1,6 @@
 ﻿@section scripts
 {
-    <script src="~/bundles/app"></script>
+    @Scripts.Render("~/bundles/app")
     <link href="~/Scripts/jquery-ui.min.css" rel="stylesheet">
     <script>
         function getParameterByName(name) {
@@ -56,34 +56,56 @@
             var data = store.get(song.id());
             var songVM = new SongViewModel();
             songVM.create(data);
+            ko.applyBindings(songVM, document.getElementById("song"));
         }
-
-        
 
         $(function () {
             var id = getParameterByName('id');
-            console.log(id);
-            
+            console.log(id);            
             var model = new SetViewModel();
             model.load(id);
             ko.bindingHandlers.sortable.afterMove = model.save;
-            ko.applyBindings(model);
+            ko.applyBindings(model,document.getElementById("nav"));
         });
 
     </script>
 }
-<h2><span contenteditable data-bind="text:title"></span></h2>
-<ul data-bind="sortable: songs">
-    <li><a href="#" data-bind="click:displaySong"><span data-bind="text:title"></span></a></li>
-</ul>
-<div class="dropdown hidden-print">
-    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-        Add Song
-        <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" data-bind="foreach: allsongs">
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="#" data-bind="text:title ,click:$parent.addSong"></a></li>
-    </ul>
-</div>
 
+<div id="song" style="float:right;display:none">
+    <h2  data-bind="text: Title"></h2>
+    <table class="table">
+        <tr>
+            <th></th>
+            <th>Bars</th>
+            <th>Groove</th>
+            <th>Vocal Queue</th>
+        </tr>
+        <tbody id="song" data-bind="foreach: Sections">
+            <tr>
+                <td data-bind="text: Name"></td>
+                <td data-bind="text:  Measures"></td>
+                <td valign="middle">
+                    <canvas data-bind="staff: Grooves" height=120> </canvas>
+                </td>
+                <td  data-bind="text: Vocal"></td>
+                <td class="handle hidden-print"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div style="float:left" id="nav">
+    <h2><span contenteditable data-bind="text:title"></span></h2>
+    <ul data-bind="sortable: songs">
+        <li><a href="#" data-bind="click:displaySong"><span data-bind="text:title"></span></a></li>
+    </ul>
+    <div class="dropdown hidden-print">
+        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+            Add Song
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" data-bind="foreach: allsongs">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" data-bind="text:title ,click:$parent.addSong"></a></li>
+        </ul>
+    </div>
+</div>
 

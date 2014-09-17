@@ -16,5 +16,7 @@ namespace Drumly.Domain
         }
 
         public DbSet<Song> Songs { get; set; }
+
+        public DbSet<SongStorage> Storage { get; set; }
     }
 }
