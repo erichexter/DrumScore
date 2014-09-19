@@ -75,7 +75,10 @@
             ko.bindingHandlers.sortable.afterMove = set.save;
 
              model = new viewmodel();
-            model.set(set);
+             model.set(set);
+            if (set.songs().length > 0) {
+                displaySong(set.songs()[0]);
+            }
 
             ko.applyBindings(model);
         });
