@@ -1,4 +1,47 @@
-﻿function guid() {
+﻿(function (factory) {
+    if (typeof require === "function" && typeof exports === "object" && typeof module === "object") {
+        factory(require("knockout"), exports);
+    } else if (typeof define === "function" && define["amd"]) {
+        define(["knockout", "exports"], factory);
+    } else {
+        factory(ko, ko);
+    }
+}(function (ko, exports) {
+    if (typeof (ko) === undefined) {
+        throw 'Knockout is required, please ensure it is loaded before loading the dirty flag plug-in';
+    }
+
+    exports.DirtyFlag = function (objectToTrack, isInitiallyDirty, hashFunction) {
+
+        hashFunction = hashFunction || ko.toJSON;
+
+        var
+            self = this,
+            _objectToTrack = objectToTrack,
+            _lastCleanState = ko.observable(hashFunction(_objectToTrack)),
+            _isInitiallyDirty = ko.observable(isInitiallyDirty),
+
+            result = function () {
+                self.forceDirty = function () {
+                    _isInitiallyDirty(true);
+                };
+
+                self.isDirty = ko.computed(function () {
+                    return _isInitiallyDirty() || hashFunction(_objectToTrack) !== _lastCleanState();
+                });
+
+                self.reset = function () {
+                    _lastCleanState(hashFunction(_objectToTrack));
+                    _isInitiallyDirty(false);
+                };
+                return self;
+            };
+
+        return result;
+    };
+}));
+
+function guid() {
     return (S4() + S4() + "-" + S4() + "-4" + S4().substr(0, 3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
 }
 
@@ -22,6 +65,7 @@ function AppViewModel() {
             self.onchange();
             var s = new SongViewModel();
             s.id(index.id());
+            s.title(index.title());
             s.save();
         }
     };
@@ -80,54 +124,27 @@ function set(title, id) {
 }
 function SongViewModel() {
     var self = this;
+    self.sections = ko.observableArray();
+    self.title = ko.observable();
+    self.id = ko.observable();
+
+    self.sections.subscribe(function() {
+        self.save();
+    });
+
+    self.title.subscribe(function () {
+        self.save();
+    });
+
+
+
     self.save = function () {
         store.set(self.id(), ko.toJS(self));
-        //$.ajax({
-        //    type: "PUT",
-        //    url: "/api/Songs/"+self.Id(),
-        //    contentType: "application/json; charset=utf-8",
-        //    dataType: "json",
-        //    data: ko.toJSON(self),
-        //    success: function (data) {
-                
-        //        var app = new AppViewModel();
-        //        app.load();
-        //        var exists = false;
-        //        if (app.songs != undefined) {
-        //            for (i = 0; i < app.songs.length; i++) {                        
-        //                var s = app.songs[i];
-        //                if (s.id === self.id()) {
-        //                    exists = true;
-        //                }                        
-        //            }
-        //            if (!exists) {
-        //                app.songs.push(new song(self.Title(), self.Id()));
-        //                app.save();
-        //            }
-        //        }
-                
-        //    },
-        //    error: function (err) {
-        //        alert("Error : " + err.status + "   " + err.statusText);
-        //    }
-        //});
     };
 
     self.load = function load(id) {
         var data = store.get(id);
         self.create(data);
-        //$.ajax({
-        //    type: "GET",
-        //    url: "/api/Songs/" + id,
-        //    contentType: "application/json; charset=utf-8",
-        //    dataType: "json",
-        //    success: function(data) {
-        //        self.create(data);
-        //    },
-        //    error: function(err) {
-        //        alert("Error : " + err.status + "   " + err.statusText);
-        //    }
-        //});
     };
 
     self.create = function(data) {
@@ -136,13 +153,13 @@ function SongViewModel() {
         for (var i = 0; i < data.sections.length; i++) {
             var sec = data.sections[i];
             var sec1 = new section(sec);
+            sec1.changed = function () {
+                self.save();
+            };
             self.sections.push(sec1);
         }
     };
 
-    self.sections = ko.observableArray();
-    self.title = ko.observable();
-    self.id = ko.observable();
 
     self.add = function () {
         var section1 = new section({
@@ -163,11 +180,28 @@ function SongViewModel() {
 }
 function section(data) {
     var self = this;
+
+    self.changed = function() {
+    };
+
     self.id = ko.observable(data.id);
     self.name = ko.observable(data.name);
     self.measures = ko.observable(data.measures);
     self.grooves = ko.observable();
     self.vocal = ko.observable(data.vocal);
+
+    self.name.subscribe(function() {
+        self.changed();
+    });
+
+    self.vocal.subscribe(function () {
+        self.changed();
+    });
+
+    self.grooves.subscribe(function () {
+        self.changed();
+    });
+
 
     var g = new groove();
     g.timeSignature.beats = 4;
@@ -181,23 +215,23 @@ function section(data) {
         g.addMeasure();
         var measure = data.grooves.measures[i];
 
-        for (var j = 0; j < measure.Top.length; j++) {
-            var v = measure.Top[j];
+        for (var j = 0; j < measure.top.length; j++) {
+            var v = measure.top[j];
             g.measures[i].addTop();
-            g.measures[i].top[j].position = v.Position;
-            for (var k = 0; k < v.Beats.length; k++) {
+            g.measures[i].top[j].position = v.position;
+            for (var k = 0; k < v.beats.length; k++) {
                 g.measures[i].top[j].addBeat();
-                g.measures[i].top[j].beats[k].notes = v.Beats[k].Notes;
+                g.measures[i].top[j].beats[k].notes = v.beats[k].notes;
             }
         }
 
-        for (var j = 0; j < measure.Bottom.length; j++) {
-            var v = measure.Bottom[j];
+        for (var j = 0; j < measure.bottom.length; j++) {
+            var v = measure.bottom[j];
             g.measures[i].addBottom();
-            g.measures[i].bottom[j].position = v.Position;
-            for (var k = 0; k < v.Beats.length; k++) {
+            g.measures[i].bottom[j].position = v.position;
+            for (var k = 0; k < v.beats.length; k++) {
                 g.measures[i].bottom[j].addBeat();
-                g.measures[i].bottom[j].beats[k].notes = v.Beats[k].Notes;
+                g.measures[i].bottom[j].beats[k].notes = v.beats[k].notes;
             }
         }
     }

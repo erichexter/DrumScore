@@ -52,60 +52,110 @@
             };
         }
 
+        function viewmodel() {
+            self = this;
+            self.set = ko.observable();
+            self.song = ko.observable();
+        }
+
         function displaySong(song) {
             var data = store.get(song.id());
             var songVM = new SongViewModel();
             songVM.create(data);
-            ko.applyBindings(songVM, document.getElementById("song"));
+            model.song(songVM);
+            $("#song").show();
         }
 
+        var model;
         $(function () {
             var id = getParameterByName('id');
             console.log(id);            
-            var model = new SetViewModel();
-            model.load(id);
-            ko.bindingHandlers.sortable.afterMove = model.save;
-            ko.applyBindings(model,document.getElementById("nav"));
+            var set = new SetViewModel();
+            set.load(id);
+            ko.bindingHandlers.sortable.afterMove = set.save;
+
+             model = new viewmodel();
+            model.set(set);
+
+            ko.applyBindings(model);
         });
 
     </script>
 }
-
-<div id="song" style="float:right;display:none">
-    <h2  data-bind="text: Title"></h2>
-    <table class="table">
-        <tr>
-            <th></th>
-            <th>Bars</th>
-            <th>Groove</th>
-            <th>Vocal Queue</th>
-        </tr>
-        <tbody id="song" data-bind="foreach: Sections">
-            <tr>
-                <td data-bind="text: Name"></td>
-                <td data-bind="text:  Measures"></td>
-                <td valign="middle">
-                    <canvas data-bind="staff: Grooves" height=120> </canvas>
-                </td>
-                <td  data-bind="text: Vocal"></td>
-                <td class="handle hidden-print"></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<div style="float:left" id="nav">
-    <h2><span contenteditable data-bind="text:title"></span></h2>
-    <ul data-bind="sortable: songs">
-        <li><a href="#" data-bind="click:displaySong"><span data-bind="text:title"></span></a></li>
-    </ul>
-    <div class="dropdown hidden-print">
-        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-            Add Song
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" data-bind="foreach: allsongs">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" data-bind="text:title ,click:$parent.addSong"></a></li>
-        </ul>
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <ul class="breadcrumb">
+                <li>
+                    <a href="/app">Home</a> <span class="divider">/</span>
+                </li>
+                <li>
+                    <a href="/app/sets">Set</a> <span class="divider">/</span>
+                </li>
+                <li class="active">
+                    
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <div class="col-md-2 column">
+            <div class="list-group" data-bind="with: set">
+                <a href="#" class="list-group-item active" data-bind="text:title"></a>
+                <span data-bind="sortable: songs">
+                    <div class="list-group-item">
+                        <a href="#" data-bind="click:displaySong"><span data-bind="text:title"></span></a>
+                    </div>
+                </span>
+                <div class="list-group-item">
+                    <div class="dropdown hidden-print">
+                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                            <span class="glyphicon glyphicon-plus"></span>
+                            Song
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                            <!-- ko foreach: allsongs -->
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" data-bind="text:title ,click:$parent.addSong"></a></li>
+                            <!-- /ko -->
+                            @*<li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:alert('hey')" >New Song</a></li>*@
+                        </ul>
+                    </div>
+                
+                </div>                 
+            </div>
+        </div>
+        <div class="col-md-9 column">
+            <div class="panel panel-default" data-bind="with: song">
+                <div class="panel-heading">
+                    <h3 class="panel-title" data-bind="text: title">
+                    </h3>
+                </div>
+                <div class="panel-body">
+                        <ul data-bind="foreach: sections">
+                            <li>
+                                <span data-bind="text: name"></span>
+                                <span data-bind="text:  measures"></span>
+                                <span valign="middle">
+                                    <canvas data-bind="staff: grooves" height=120> </canvas>
+                                </span>
+                                <span data-bind="text: vocal"></span>
+                                <span class="handle hidden-print"></span>
+                            </li>
+                        </ul>
+                </div>
+                <div class="panel-footer">
+                    tempo
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1 column">
+            <div class="btn-group btn-group-vertical btn-group-lg">
+                <button class="btn btn-default" type="button"> << </button>
+                <button class="btn btn-default" type="button"> >> </button>
+            </div>
+        </div>
     </div>
 </div>
 
+<div class="clearfix"></div>

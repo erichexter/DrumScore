@@ -14,5 +14,9 @@ namespace WebApplication1.Controllers
         {
             return View();
         }
+        public ActionResult Song()
+        {
+            return View();
+        }
     }
 }
