@@ -140,6 +140,7 @@ function SongViewModel() {
 
     self.save = function () {
         store.set(self.id(), ko.toJS(self));
+        //for a title change upate the app object.
     };
 
     self.load = function load(id) {
@@ -302,10 +303,10 @@ function section(data) {
         g.measures[index].top[4].addBeat();
         g.measures[index].top[4].addBeat();
         g.measures[index].top[4].addBeat();
-        g.measures[index].top[4].beats[0].notes = [1, 0, 1, 0];
-        g.measures[index].top[4].beats[1].notes = [1, 0, 1, 0];
-        g.measures[index].top[4].beats[2].notes = [1, 0, 1, 0];
-        g.measures[index].top[4].beats[3].notes = [1, 0, 1, 0];
+        g.measures[index].top[4].beats[0].notes = [0, 0, 0, 0];
+        g.measures[index].top[4].beats[1].notes = [0, 0, 0, 0];
+        g.measures[index].top[4].beats[2].notes = [0, 0, 0, 0];
+        g.measures[index].top[4].beats[3].notes = [0, 0, 0, 0];
 
         g.measures[index].addTop();
         g.measures[index].top[5].position = 10;//tom1 rims
@@ -324,10 +325,10 @@ function section(data) {
         g.measures[index].top[6].addBeat();
         g.measures[index].top[6].addBeat();
         g.measures[index].top[6].addBeat();
-        g.measures[index].top[6].beats[0].notes = [0, 0, 0, 0];
-        g.measures[index].top[6].beats[1].notes = [0, 0, 0, 0];
-        g.measures[index].top[6].beats[2].notes = [0, 0, 0, 0];
-        g.measures[index].top[6].beats[3].notes = [0, 0, 0, 0];
+        g.measures[index].top[6].beats[0].notes = [1, 0, 1, 0];
+        g.measures[index].top[6].beats[1].notes = [1, 0, 1, 0];
+        g.measures[index].top[6].beats[2].notes = [1, 0, 1, 0];
+        g.measures[index].top[6].beats[3].notes = [1, 0, 1, 0];
 
         g.measures[index].addTop();
         g.measures[index].top[7].position = 12;//hihat open

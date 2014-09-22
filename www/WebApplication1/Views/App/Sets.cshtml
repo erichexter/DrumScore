@@ -2,6 +2,21 @@
 {
     @Scripts.Render("~/bundles/app")
     <link href="~/Scripts/jquery-ui.min.css" rel="stylesheet">
+    <style>
+        .navbar {
+            display: none;
+        }
+
+        body {
+            padding-top: 10px;
+        }
+        .songcell {
+            display: table-cell;
+            vertical-align: middle;
+            height: 125px;
+            padding-right: 10PX;
+        }
+    </style>
     <script>
         function getParameterByName(name) {
             name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -18,21 +33,21 @@
             self.id = ko.observable();
             self.allsongs = new Array();
 
-            self.load = function (id) {
+            self.load = function(id) {
                 self.id(id);
                 var app = store.get('app');
-                
+
                 for (var i = 0; i < app.sets.length; i++) {
                     if (app.sets[i].id === id) {
                         var set = app.sets[i];
                         self.title(set.title);
                     }
                 }
-                
+
                 for (var i = 0; i < app.songs.length; i++) {
                     self.allsongs.push(app.songs[i]);
                 }
-            
+
                 var data = store.get(id);
                 if (data != undefined && data.songs != undefined) {
                     for (i = 0; i < data.songs.length; i++) {
@@ -42,7 +57,7 @@
                 }
             };
 
-            self.save = function () {
+            self.save = function() {
                 store.set(self.id(), ko.toJS(self));
             };
 
@@ -58,6 +73,11 @@
             self.song = ko.observable();
         }
 
+        function removeSong(index) {
+            alert(index);
+        }
+        
+
         function displaySong(song) {
             var data = store.get(song.id());
             var songVM = new SongViewModel();
@@ -67,17 +87,19 @@
         }
 
         var model;
-        $(function () {
+        $(function() {
             var id = getParameterByName('id');
-            console.log(id);            
+            console.log(id);
             var set = new SetViewModel();
             set.load(id);
             ko.bindingHandlers.sortable.afterMove = set.save;
 
-             model = new viewmodel();
-             model.set(set);
-            if (set.songs().length > 0) {
-                displaySong(set.songs()[0]);
+
+            model = new viewmodel();
+            model.set(set);
+
+            if (model.set().songs().length > 0) {
+                displaySong(model.set().songs()[0]);
             }
 
             ko.applyBindings(model);
@@ -96,18 +118,22 @@
                     <a href="/app/sets">Set</a> <span class="divider">/</span>
                 </li>
                 <li class="active">
-                    
-                </li>
+                    <span data-bind="text:set().title"></span>
+                    <a class="btn btn-xs pull-right" data-bind="click:">Edit</a>
+                    </li>
             </ul>
+            
+            <div class="clearfix"></div>
         </div>
     </div>
     <div class="row clearfix">
-        <div class="col-md-2 column">
+        <div class="col-md-3 column">
             <div class="list-group" data-bind="with: set">
-                <a href="#" class="list-group-item active" data-bind="text:title"></a>
+                
                 <span data-bind="sortable: songs">
                     <div class="list-group-item">
-                        <a href="#" data-bind="click:displaySong"><span data-bind="text:title"></span></a>
+                        <a href="#" data-bind="click: displaySong"><span data-bind="text:title"></span></a>
+                        <a class="btn btn-warning btn-xs pull-right" href="#" data-bind="click: function(data, event) { removeSong($index()) }"><span class="glyphicon glyphicon-remove"></span></a>
                     </div>
                 </span>
                 <div class="list-group-item">
@@ -127,35 +153,34 @@
                 
                 </div>                 
             </div>
+            
+            <button class="btn btn-default btn-lg" type="button"> |<< </button>
+            <button class="btn btn-default btn-lg" type="button"> << </button>
+            <button class="btn btn-default btn-lg" type="button"> >> </button>
+            <button class="btn btn-default btn-lg" type="button"> >>| </button>
+            
+          
         </div>
         <div class="col-md-9 column">
             <div class="panel panel-default" data-bind="with: song">
                 <div class="panel-heading">
-                    <h3 class="panel-title" data-bind="text: title">
-                    </h3>
+                    <h3 class="panel-title pull-left" data-bind="text: title">
+                    </h3><a class="btn btn-xs pull-right" data-bind="attr: { href: '/app/song?id='+id() }" >Edit</a>
+                    <div class="clearfix"></div>
                 </div>
                 <div class="panel-body">
-                        <ul data-bind="foreach: sections">
-                            <li>
-                                <span data-bind="text: name"></span>
-                                <span data-bind="text:  measures"></span>
-                                <span valign="middle">
+                        <ul class="list-group"  data-bind="foreach: sections">
+                            <li class="list-group-item" >
+                                <span class="songcell" data-bind="text: name"></span>
+                                <span class="songcell" data-bind="text:  measures"></span>
+                                <span class="songcell" valign="middle">
                                     <canvas data-bind="staff: grooves" height=120> </canvas>
                                 </span>
-                                <span data-bind="text: vocal"></span>
+                                <span class="songcell" data-bind="text: vocal"></span>
                                 <span class="handle hidden-print"></span>
                             </li>
                         </ul>
                 </div>
-                <div class="panel-footer">
-                    tempo
-                </div>
-            </div>
-        </div>
-        <div class="col-md-1 column">
-            <div class="btn-group btn-group-vertical btn-group-lg">
-                <button class="btn btn-default" type="button"> << </button>
-                <button class="btn btn-default" type="button"> >> </button>
             </div>
         </div>
     </div>
