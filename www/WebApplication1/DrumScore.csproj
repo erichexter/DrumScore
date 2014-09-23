@@ -176,13 +176,7 @@
     <Compile Include="Controllers\SongsController.cs" />
     <Compile Include="Domain\DrumScoreContext.cs" />
     <Compile Include="Domain\Entity.cs" />
-    <Compile Include="Domain\Groove.cs" />
-    <Compile Include="Domain\Section.cs" />
-    <Compile Include="Domain\Song.cs" />
     <Compile Include="Domain\SongStorage.cs" />
-    <Compile Include="Domain\StringExtensions.cs" />
-    <Compile Include="Domain\Voice.cs" />
-    <Compile Include="Domain\VoiceName.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

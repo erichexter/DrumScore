@@ -14,23 +14,13 @@ namespace Drumly.Controllers
         {
             return View();
         }
-        public ActionResult New()
-        {
-            var model = new Song() { Title = "New song" };
-            using (var context = new DrumScoreContext())
-            {
-                context.Songs.Add(model);
-                context.SaveChanges();
-            }
-            return RedirectToAction("Edit",new{id=model.Id});
-        }
 
         public ActionResult Edit(Guid Id)
         {
             using (var ctx = new DrumScoreContext())
             {
-                var song = ctx.Songs.Single(s => s.Id == Id);
-                return View("Edit",song);
+                var song = ctx.Storage.Single(s => s.Id == Id);
+                return View("Edit",song.Song);
             }
         }
     }

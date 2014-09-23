@@ -1,4 +1,4 @@
-﻿@model List<Drumly.Domain.Song>
+﻿@model dynamic
 @{
     ViewBag.Title = "Home Page";
 }
@@ -6,20 +6,16 @@
 <div class="jumbotron">
     <h1>Drumly</h1>
     <p class="lead">Create quick song notations, its like cliff notes for drumset.</p>
-    <p><a href="@Url.Action("New","Song")" class="btn btn-primary btn-lg">Create a new drumly, Now &raquo;</a></p>
+    <p><a href="@Url.Action("index","app")" class="btn btn-primary btn-lg">Create a new drumly, Now &raquo;</a></p>
 </div>
 
-@foreach (var model in Model)
-{
-    <ul><a href="@Url.Action("Edit","Song",new {id=@model.Id})">@(model.Title)</a></ul>
-}
 <div class="row">
     <div class="col-md-4">
         <h2>Getting started</h2>
         <p>
             
         </p>
-        <p><a class="btn btn-default" href="@Url.Action("New","Song")">Create &raquo;</a></p>
+        <p><a class="btn btn-default" href="@Url.Action("index","app")">Create &raquo;</a></p>
     </div>
     <div class="col-md-4">
         <h2>Save Set Lists</h2>

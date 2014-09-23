@@ -9,14 +9,6 @@ namespace Drumly.Domain
             Database.SetInitializer<DrumScoreContext>(new CreateDatabaseIfNotExists<DrumScoreContext>());
         }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Section>().HasOptional(d => d.Grooves);
-            base.OnModelCreating(modelBuilder);
-        }
-
-        public DbSet<Song> Songs { get; set; }
-
         public DbSet<SongStorage> Storage { get; set; }
     }
 }
