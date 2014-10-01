@@ -40,6 +40,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -170,6 +171,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AppController.cs" />
+    <Compile Include="Controllers\DataController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\SongController.cs" />
@@ -187,6 +189,10 @@
     <Compile Include="Migrations\201409170412584_SongStorage.cs" />
     <Compile Include="Migrations\201409170412584_SongStorage.Designer.cs">
       <DependentUpon>201409170412584_SongStorage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409251815295_new.cs" />
+    <Compile Include="Migrations\201409251815295_new.Designer.cs">
+      <DependentUpon>201409251815295_new.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -290,6 +296,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409170412584_SongStorage.resx">
       <DependentUpon>201409170412584_SongStorage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409251815295_new.resx">
+      <DependentUpon>201409251815295_new.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

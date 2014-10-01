@@ -1,45 +1,75 @@
-﻿(function (factory) {
-    if (typeof require === "function" && typeof exports === "object" && typeof module === "object") {
-        factory(require("knockout"), exports);
-    } else if (typeof define === "function" && define["amd"]) {
-        define(["knockout", "exports"], factory);
-    } else {
-        factory(ko, ko);
-    }
-}(function (ko, exports) {
-    if (typeof (ko) === undefined) {
-        throw 'Knockout is required, please ensure it is loaded before loading the dirty flag plug-in';
-    }
+﻿function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
 
-    exports.DirtyFlag = function (objectToTrack, isInitiallyDirty, hashFunction) {
 
-        hashFunction = hashFunction || ko.toJSON;
+function SetViewModel() {
+    var self = this;
+    self.changed = ko.observable(true);
+    self.title = ko.observable();
+    self.songs = ko.observableArray();
+    self.id = ko.observable(guid());
+    self.allsongs = new Array();
+    self.changed = ko.observable(false);
+    self.load = function(id) {
+        self.id(id);
+        var app = store.get('app');
 
-        var
-            self = this,
-            _objectToTrack = objectToTrack,
-            _lastCleanState = ko.observable(hashFunction(_objectToTrack)),
-            _isInitiallyDirty = ko.observable(isInitiallyDirty),
+        for (var i = 0; i < app.sets.length; i++) {
+            if (app.sets[i].id === id) {
+                var set = app.sets[i];
+                self.title(set.title);
+            }
+        }
 
-            result = function () {
-                self.forceDirty = function () {
-                    _isInitiallyDirty(true);
-                };
+        for (var i = 0; i < app.songs.length; i++) {
+            self.allsongs.push(app.songs[i]);
+        }
 
-                self.isDirty = ko.computed(function () {
-                    return _isInitiallyDirty() || hashFunction(_objectToTrack) !== _lastCleanState();
-                });
-
-                self.reset = function () {
-                    _lastCleanState(hashFunction(_objectToTrack));
-                    _isInitiallyDirty(false);
-                };
-                return self;
-            };
-
-        return result;
+        var data = store.get(id);
+        if (data != undefined && data.songs != undefined) {
+            for (i = 0; i < data.songs.length; i++) {
+                var set1 = data.songs[i];
+                self.songs.push(new song(set1.title, set1.id));
+            }
+        }
+        if (data != undefined) {
+            self.changed(data.changed);
+        } else {
+            self.changed(true);
+        }
     };
-}));
+
+    self.save = function() {
+        //self.changed(true);
+        store.set(self.id(), ko.toJS(self));
+    };
+
+    self.addSong = function(data) {
+        self.songs.push(new song(data.title, data.id));
+        self.changed(true);
+        self.save();
+    };
+    self.sync = function () {
+        if (self.changed()) {
+            $.ajax({
+                url: "/api/data/" + self.id() + "?type=set",
+                type: "Put",
+                data: ko.toJSON(self),
+                contentType: 'application/json; charset=utf-8',
+                success: function(data) {
+                },
+                error: function() { alert('error'); }
+            });
+        }
+        self.changed(false);
+        self.save();
+
+    };
+}
 
 function guid() {
     return (S4() + S4() + "-" + S4() + "-4" + S4().substr(0, 3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
@@ -53,6 +83,8 @@ function S4() {
 
 function AppViewModel() {
     var self = this;
+    self.changed = ko.observable(true);
+    self.id = ko.observable(guid());
     self.onchange = function () {
     };
     self.songs = ko.observableArray();
@@ -67,18 +99,93 @@ function AppViewModel() {
             s.id(index.id());
             s.title(index.title());
             s.save();
+            self.changed(true);
+        }
+    };
+
+    self.download = function(id) {
+        $.ajax({
+            url: "/api/Data/" + id,
+            type: "Get",
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                self.internalLoad(data);
+                self.downloadSets();
+                self.save();
+            },
+            error: function() {
+                 alert('error');
+            }
+        });
+    };
+
+    self.downloadSets = function () {
+        for (i = 0; i < self.sets().length; i++) {
+            var set1 = self.sets()[i];
+            var id = set1.id();
+            if (store.get(id) == undefined)
+            {                
+                $.ajax({
+                    url: "/api/Data/" + id,
+                    type: "Get",
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (data) {
+                        data.changed = false;
+                        store.set(id, data);
+                        var set = new SetViewModel();
+                        set.load(id);
+                        for (var j = 0; j < set.songs(); j++) {
+                            var songid = set.songs()[j].id();
+                            self.downloadSong(songid);
+                        }
+                    },
+                    error: function () {
+                        alert('error');
+                    }
+                });
+            }
+        }
+
+    };
+
+    self.downloadSong = function(id) {
+        $.ajax({
+            url: "/api/Data/" + id,
+            type: "Get",
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                store.set(id, data);
+            },
+            error: function () {
+                alert('error');
+            }
+        });
+    };
+    
+
+    self.shareCloud = function() {
+        window.prompt("Cloud Key: ctrl+c to copy ", self.id());
+    };
+    self.downloadCloud = function() {
+        var name = window.prompt("Cloud Key", "");
+        if (name != null) {
+            self.download(name);
         }
     };
     self.addSet = function () {
         var name = window.prompt("Set Name", "New Set " + (self.sets().length + 1));
         if (name != null) {
-            self.sets.push(new set(name));
+            var self1 = new set(name);
+            self.sets.push(self1);
             self.onchange();
+            self.changed(true);
+            var set2 = new SetViewModel();
+            set2.load(self1.id());
+            set2.save();
         }
     };
 
-    self.load = function () {
-        var data = store.get('app');
+    self.internalLoad = function(data) {
         if (data != undefined && data.sets != undefined) {
             for (i = 0; i < data.sets.length; i++) {
                 var set1 = data.sets[i];
@@ -91,11 +198,50 @@ function AppViewModel() {
                 self.songs.push(new song(set1.title, set1.id));
             }
         }
+        if (data != undefined && data.id != undefined) {
+            self.id(data.id);
+        } else {
+            self.id(guid());
+        }
+        self.changed(false);
+    };
+    self.load = function () {
+        var data = store.get('app');
+        if (data != undefined) {
+            self.internalLoad(data);
+
+            self.changed(data.changed);
+        }
     };
 
     self.save = function() {
-            var jsonData = ko.toJS(self);
+        var jsonData = ko.toJS(self);
             store.set('app', jsonData);
+    };
+
+    self.sync = function () {
+        if (self.changed()) {
+            $.ajax({
+                url: "/api/Data/" + self.id() + "/?type=App",
+                type: "Put",
+                data: ko.toJSON(self),
+                contentType: 'application/json; charset=utf-8',
+                success: function(data) {
+                },
+                error: function() { alert('error'); }
+            });
+            self.changed(false);
+            for (i = 0; i < self.sets().length; i++) {
+                var set = new SetViewModel();
+                set.load(self.sets()[i].id());
+                set.sync();
+            }
+            for (i = 0; i < self.songs().length; i++) {
+                var song = new SongViewModel();
+                song.load(self.songs()[i].id());
+                song.sync();
+            }
+        }
     };
 }
 
@@ -139,18 +285,24 @@ function SongViewModel() {
 
 
     self.save = function () {
-        store.set(self.id(), ko.toJS(self));
+        var object = ko.toJS(self);
+        object.changed = true;
+        store.set(self.id(), object);
         //for a title change upate the app object.
     };
 
     self.load = function load(id) {
         var data = store.get(id);
-        self.create(data);
+        if (data!=undefined) {
+            self.create(data);
+        }
+        self.id(id);
     };
 
     self.create = function(data) {
         self.title(data.title);
         self.id(data.id);
+        if (data.sections != undefined)
         for (var i = 0; i < data.sections.length; i++) {
             var sec = data.sections[i];
             var sec1 = new section(sec);
@@ -176,6 +328,19 @@ function SongViewModel() {
 
     self.addGroove = function (data) {
         data.add();
+    };
+
+    self.sync = function() {
+        var id = self.id();
+        $.ajax({
+            url: "/api/Songs/" + id,
+            type: "Put",
+            data: ko.toJSON(self),
+            contentType: 'application/json; charset=utf-8',
+            success: function(data) {
+            },
+            error: function() { alert('error'); }
+        });
     };
 
 }

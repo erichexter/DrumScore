@@ -18,54 +18,6 @@
         }
     </style>
     <script>
-        function getParameterByName(name) {
-            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-                results = regex.exec(location.search);
-            return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-        }
-
-
-        function SetViewModel() {
-            var self = this;
-            self.title = ko.observable();
-            self.songs = ko.observableArray();
-            self.id = ko.observable();
-            self.allsongs = new Array();
-
-            self.load = function(id) {
-                self.id(id);
-                var app = store.get('app');
-
-                for (var i = 0; i < app.sets.length; i++) {
-                    if (app.sets[i].id === id) {
-                        var set = app.sets[i];
-                        self.title(set.title);
-                    }
-                }
-
-                for (var i = 0; i < app.songs.length; i++) {
-                    self.allsongs.push(app.songs[i]);
-                }
-
-                var data = store.get(id);
-                if (data != undefined && data.songs != undefined) {
-                    for (i = 0; i < data.songs.length; i++) {
-                        var set1 = data.songs[i];
-                        self.songs.push(new song(set1.title, set1.id));
-                    }
-                }
-            };
-
-            self.save = function() {
-                store.set(self.id(), ko.toJS(self));
-            };
-
-            self.addSong = function(data) {
-                self.songs.push(new song(data.title, data.id));
-                self.save();
-            };
-        }
 
         function viewmodel() {
             self = this;
@@ -76,7 +28,7 @@
         function removeSong(index) {
             alert(index);
         }
-        
+
 
         function displaySong(song) {
             var data = store.get(song.id());
@@ -106,69 +58,69 @@
         });
 
     </script>
-}
-<div class="container">
-    <div class="row clearfix">
-        <div class="col-md-12 column">
-            <ul class="breadcrumb">
-                <li>
-                    <a href="/app">Home</a> <span class="divider">/</span>
-                </li>
-                <li>
-                    <a href="/app/sets">Set</a> <span class="divider">/</span>
-                </li>
-                <li class="active">
-                    <span data-bind="text:set().title"></span>
-                    <a class="btn btn-xs pull-right" data-bind="click:">Edit</a>
+    }
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <ul class="breadcrumb">
+                    <li>
+                        <a href="/app">Home</a> <span class="divider">/</span>
                     </li>
-            </ul>
+                    <li>
+                        <a href="/app/sets">Set</a> <span class="divider">/</span>
+                    </li>
+                    <li class="active">
+                        <span data-bind="text:set().title"></span>
+                    
+                    </li>
+                </ul>
             
-            <div class="clearfix"></div>
-        </div>
-    </div>
-    <div class="row clearfix">
-        <div class="col-md-3 column">
-            <div class="list-group" data-bind="with: set">
-                
-                <span data-bind="sortable: songs">
-                    <div class="list-group-item">
-                        <a href="#" data-bind="click: displaySong"><span data-bind="text:title"></span></a>
-                        <a class="btn btn-warning btn-xs pull-right" href="#" data-bind="click: function(data, event) { removeSong($index()) }"><span class="glyphicon glyphicon-remove"></span></a>
-                    </div>
-                </span>
-                <div class="list-group-item">
-                    <div class="dropdown hidden-print">
-                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                            <span class="glyphicon glyphicon-plus"></span>
-                            Song
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                            <!-- ko foreach: allsongs -->
-                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" data-bind="text:title ,click:$parent.addSong"></a></li>
-                            <!-- /ko -->
-                            @*<li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:alert('hey')" >New Song</a></li>*@
-                        </ul>
-                    </div>
-                
-                </div>                 
+                <div class="clearfix"></div>
             </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-md-3 column">
+                <div class="list-group" data-bind="with: set">
+                
+                    <span data-bind="sortable: songs">
+                        <div class="list-group-item">
+                            <a href="#" data-bind="click: displaySong"><span data-bind="text:title"></span></a>
+                            <a class="btn btn-warning btn-xs pull-right" href="#" data-bind="click: function(data, event) { removeSong($index()) }"><span class="glyphicon glyphicon-remove"></span></a>
+                        </div>
+                    </span>
+                    <div class="list-group-item">
+                        <div class="dropdown hidden-print">
+                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-plus"></span>
+                                Song
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                                <!-- ko foreach: allsongs -->
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#" data-bind="text:title ,click:$parent.addSong"></a></li>
+                                <!-- /ko -->
+                                @*<li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:alert('hey')" >New Song</a></li>*@
+                            </ul>
+                        </div>
+                
+                    </div>                 
+                </div>
             
-            <button class="btn btn-default btn-lg" type="button"> |<< </button>
-            <button class="btn btn-default btn-lg" type="button"> << </button>
-            <button class="btn btn-default btn-lg" type="button"> >> </button>
-            <button class="btn btn-default btn-lg" type="button"> >>| </button>
+                <button class="btn btn-default btn-lg" type="button"> |<< </button>
+                <button class="btn btn-default btn-lg" type="button"> << </button>
+                <button class="btn btn-default btn-lg" type="button"> >> </button>
+                <button class="btn btn-default btn-lg" type="button"> >>| </button>
             
           
-        </div>
-        <div class="col-md-9 column">
-            <div class="panel panel-default" data-bind="with: song">
-                <div class="panel-heading">
-                    <h3 class="panel-title pull-left" data-bind="text: title">
-                    </h3><a class="btn btn-xs pull-right" data-bind="attr: { href: '/app/song?id='+id() }" >Edit</a>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="panel-body">
+            </div>
+            <div class="col-md-9 column">
+                <div class="panel panel-default" data-bind="with: song">
+                    <div class="panel-heading">
+                        <h3 class="panel-title pull-left" data-bind="text: title">
+                        </h3><a class="btn btn-xs pull-right" data-bind="attr: { href: '/app/song?id='+id() }" >Edit</a>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="panel-body">
                         <ul class="list-group"  data-bind="foreach: sections">
                             <li class="list-group-item" >
                                 <span class="songcell" data-bind="text: name"></span>
@@ -180,10 +132,10 @@
                                 <span class="handle hidden-print"></span>
                             </li>
                         </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="clearfix"></div>
+    <div class="clearfix"></div>

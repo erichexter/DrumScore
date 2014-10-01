@@ -1,23 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Drumly.Domain;
 
-namespace Drumly.Controllers
+namespace WebApplication1.Controllers
 {
-    public class SongsController : ApiController
+    public class DataController : ApiController
     {
         private readonly DrumScoreContext db = new DrumScoreContext();
 
 
-        // GET: api/Songs/5
-
-        public IHttpActionResult GetSong(Guid id)
+        public IHttpActionResult GetData(Guid id)
         {
-            Storage storage = db.Storage.Single(s => s.Id == id);
+            var storage = db.Storage.SingleOrDefault(s => s.Id == id);
             if (storage == null)
             {
                 return NotFound();
@@ -25,8 +25,9 @@ namespace Drumly.Controllers
             return Ok(storage.Data);
         }
 
-        [ResponseType(typeof (void))]
-        public IHttpActionResult PutSong(Guid id, dynamic song)
+
+        [ResponseType(typeof(void))]
+        public IHttpActionResult PutData(Guid id, dynamic song,ObjectType type)
         {
             if (!ModelState.IsValid)
             {
@@ -41,7 +42,7 @@ namespace Drumly.Controllers
             Storage storage = db.Set<Storage>().SingleOrDefault(e => e.Id == id);
             if (storage == null)
             {
-                storage = new Storage {Type = ObjectType.Song};
+                storage = new Storage { Type = type };
                 storage.Id = id;
                 db.Storage.Add(storage);
             }
@@ -63,7 +64,6 @@ namespace Drumly.Controllers
 
             return StatusCode(HttpStatusCode.NoContent);
         }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)

@@ -20,7 +20,7 @@ namespace Drumly.Controllers
             using (var ctx = new DrumScoreContext())
             {
                 var song = ctx.Storage.Single(s => s.Id == Id);
-                return View("Edit",song.Song);
+                return View("Edit",song.Data);
             }
         }
     }

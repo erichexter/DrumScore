@@ -4,9 +4,6 @@
     @Scripts.Render("~/bundles/app")
     <link href="~/Scripts/jquery-ui.min.css" rel="stylesheet">
     <script>
-
-      
-
         function save(data) {
             data.save();
         }
@@ -16,6 +13,10 @@
             model.load();
             model.onchange = function() { save(model); };
             ko.applyBindings(model);
+            
+            setInterval(function () {
+                model.sync();
+            }, 5000);
         });
 
     </script>
@@ -34,5 +35,11 @@
         <li><a data-bind="attr: { href: '/app/song?id='+id() }"><span data-bind="text:title"></span></a></li>
     </ul>
     <a href="#" class="btn btn-sm hidden-print" data-bind="click: addSong">Add Song</a>
+
+
+    <a href="#" class="btn btn-sm hidden-print" data-bind="click: downloadCloud">Download From Cloud</a>
+    
+    <a href="#" class="btn btn-sm hidden-print" data-bind="click: shareCloud">Share</a>
+       
 </div>
 

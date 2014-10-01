@@ -1,16 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Drumly.Domain
 {
-    public class SongStorage : Entity
+    public class Storage : Entity
     {
         public string Title { get; set; }
         public string InternalData { get; set; }
-
+        public ObjectType Type { get; set; }
         [NotMapped]
-        public dynamic Song
+        public dynamic Data
         {
             get
             {
@@ -24,5 +25,12 @@ namespace Drumly.Domain
                 InternalData = JsonConvert.SerializeObject(data);
             }
         }
+    }
+
+    public enum ObjectType
+    {
+        Song=0,
+        Set=1,
+        App=2
     }
 }

@@ -9,6 +9,6 @@ namespace Drumly.Domain
             Database.SetInitializer<DrumScoreContext>(new CreateDatabaseIfNotExists<DrumScoreContext>());
         }
 
-        public DbSet<SongStorage> Storage { get; set; }
+        public DbSet<Storage> Storage { get; set; }
     }
 }

@@ -18,7 +18,7 @@
             self.id = ko.observable();
             self.allsongs = new Array();
 
-            self.load = function (id) {
+            self.load = function(id) {
                 self.id(id);
                 var app = store.get('app');
 
@@ -42,7 +42,7 @@
                 }
             };
 
-            self.save = function () {
+            self.save = function() {
                 store.set(self.id(), ko.toJS(self));
             };
 
@@ -61,16 +61,22 @@
         }
 
 
-    $(function() {
+        $(function() {
 
-        var id = getParameterByName('id');
-        console.log(id);
-        var model = new SongViewModel();
-        model.load(id);
-        ko.bindingHandlers.sortable.options.handle = ".handle";
-        ko.applyBindings(model);
-    }
-    );
+            var id = getParameterByName('id');
+            console.log(id);
+            var model = new SongViewModel();
+            model.load(id);
+            ko.bindingHandlers.sortable.options.handle = ".handle";
+            ko.applyBindings(model);
+
+            setInterval(function() {
+                
+                    model.sync();
+                
+            }, 60000);
+        }
+        );
 
     </script>
 }
