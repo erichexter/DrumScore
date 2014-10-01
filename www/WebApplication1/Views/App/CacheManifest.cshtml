@@ -1,0 +1,22 @@
+﻿@using System.Configuration
+@using System.Reflection
+CACHE MANIFEST
+@{
+    Layout = null;
+    Response.ContentType = "text/cache-manifest";
+}
+#v@(File.GetCreationTime(Assembly.GetExecutingAssembly().Location).ToUniversalTime().Subtract(
+    new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+    ).TotalMilliseconds)
+
+@Url.Action("Index", "App")
+@Url.Action("Set", "App")
+@Url.Action("Song", "App")
+@Url.Action("Index", "Home")
+
+CACHE:
+
+@foreach (var bundle in BundleTable.Bundles.GetRegisteredBundles())
+{
+<text>@BundleTable.Bundles.ResolveBundleUrl(bundle.Path)</text>
+}

@@ -276,6 +276,7 @@
     <Content Include="Views\App\Index.cshtml" />
     <Content Include="Views\App\Sets.cshtml" />
     <Content Include="Views\App\Song.cshtml" />
+    <Content Include="Views\App\CacheManifest.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

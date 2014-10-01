@@ -18,5 +18,10 @@ namespace WebApplication1.Controllers
         {
             return View();
         }
+
+        public ActionResult CacheManifest()
+        {
+            return View();
+        }
     }
 }
