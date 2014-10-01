@@ -231,17 +231,20 @@ function AppViewModel() {
                 error: function() { alert('error'); }
             });
             self.changed(false);
-            for (i = 0; i < self.sets().length; i++) {
-                var set = new SetViewModel();
-                set.load(self.sets()[i].id());
-                set.sync();
-            }
-            for (i = 0; i < self.songs().length; i++) {
-                var song = new SongViewModel();
-                song.load(self.songs()[i].id());
-                song.sync();
-            }
         }
+
+        for (i = 0; i < self.sets().length; i++) {
+            var set = new SetViewModel();
+            set.load(self.sets()[i].id());
+            set.sync();
+        }
+
+        for (i = 0; i < self.songs().length; i++) {
+            var song = new SongViewModel();
+            song.load(self.songs()[i].id());
+            song.sync();
+        }
+
     };
 }
 
@@ -285,7 +288,6 @@ function SongViewModel() {
 
     self.save = function () {
         var object = ko.toJS(self);
-        object.changed = true;
         store.set(self.id(), object);
         //for a title change upate the app object.
     };
@@ -301,11 +303,13 @@ function SongViewModel() {
     self.create = function(data) {
         self.title(data.title);
         self.id(data.id);
+        self.changed(data.changed);
         if (data.sections != undefined)
         for (var i = 0; i < data.sections.length; i++) {
             var sec = data.sections[i];
             var sec1 = new section(sec);
             sec1.changed = function () {
+                self.changed(true);
                 self.save();
             };
             self.sections.push(sec1);
@@ -323,23 +327,29 @@ function SongViewModel() {
         );
         section1.add();
         self.sections.push(section1);
+        self.changed(true);
     };
 
     self.addGroove = function (data) {
         data.add();
+        self.changed(true);
     };
 
-    self.sync = function() {
-        var id = self.id();
-        $.ajax({
-            url: "/api/Songs/" + id,
-            type: "Put",
-            data: ko.toJSON(self),
-            contentType: 'application/json; charset=utf-8',
-            success: function(data) {
-            },
-            error: function() { alert('error'); }
-        });
+    self.sync = function () {
+        if (self.changed()) {
+            var id = self.id();
+            $.ajax({
+                url: "/api/Songs/" + id,
+                type: "Put",
+                data: ko.toJSON(self),
+                contentType: 'application/json; charset=utf-8',
+                success: function(data) {
+                    self.changed(false);
+                    self.save();
+                },
+                error: function() { alert('error'); }
+            });
+        }
     };
 
 }
