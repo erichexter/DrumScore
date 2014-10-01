@@ -273,6 +273,7 @@ function SongViewModel() {
     self.sections = ko.observableArray();
     self.title = ko.observable();
     self.id = ko.observable();
+    self.changed = ko.observable(true);
 
     self.sections.subscribe(function() {
         self.save();
@@ -281,8 +282,6 @@ function SongViewModel() {
     self.title.subscribe(function () {
         self.save();
     });
-
-
 
     self.save = function () {
         var object = ko.toJS(self);
