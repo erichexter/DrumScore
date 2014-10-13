@@ -182,17 +182,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201408312123569_init.cs" />
-    <Compile Include="Migrations\201408312123569_init.Designer.cs">
-      <DependentUpon>201408312123569_init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201409170412584_SongStorage.cs" />
-    <Compile Include="Migrations\201409170412584_SongStorage.Designer.cs">
-      <DependentUpon>201409170412584_SongStorage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201409251815295_new.cs" />
-    <Compile Include="Migrations\201409251815295_new.Designer.cs">
-      <DependentUpon>201409251815295_new.cs</DependentUpon>
+    <Compile Include="Migrations\201410120022007_init.cs" />
+    <Compile Include="Migrations\201410120022007_init.Designer.cs">
+      <DependentUpon>201410120022007_init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -277,6 +269,10 @@
     <Content Include="Views\App\Sets.cshtml" />
     <Content Include="Views\App\Song.cshtml" />
     <Content Include="Views\App\CacheManifest.cshtml" />
+    <Content Include="Views\Shared\_AppLayout.cshtml" />
+    <Content Include="Views\App\_ViewStart.cshtml" />
+    <Content Include="Views\App\Set.cshtml" />
+    <Content Include="Views\App\Songs.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -292,14 +288,8 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201408312123569_init.resx">
-      <DependentUpon>201408312123569_init.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201409170412584_SongStorage.resx">
-      <DependentUpon>201409170412584_SongStorage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201409251815295_new.resx">
-      <DependentUpon>201409251815295_new.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201410120022007_init.resx">
+      <DependentUpon>201410120022007_init.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

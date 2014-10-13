@@ -3,17 +3,18 @@ namespace Drumly.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class SongStorage : DbMigration
+    public partial class init : DbMigration
     {
         public override void Up()
         {
             CreateTable(
-                "dbo.SongStorages",
+                "dbo.Storages",
                 c => new
                     {
                         Id = c.Guid(nullable: false),
                         Title = c.String(),
                         InternalData = c.String(),
+                        Type = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -21,7 +22,7 @@ namespace Drumly.Migrations
         
         public override void Down()
         {
-            DropTable("dbo.SongStorages");
+            DropTable("dbo.Storages");
         }
     }
 }

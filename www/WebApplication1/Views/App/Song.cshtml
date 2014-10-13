@@ -3,14 +3,6 @@
     @Scripts.Render("~/bundles/app")
     <link href="~/Scripts/jquery-ui.min.css" rel="stylesheet">
     <script>
-        function getParameterByName(name) {
-            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-                results = regex.exec(location.search);
-            return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-        }
-
-
         function SetViewModel() {
             var self = this;
             self.title = ko.observable();

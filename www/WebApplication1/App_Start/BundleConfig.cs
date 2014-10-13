@@ -1,4 +1,6 @@
-﻿using System.Web;
+﻿using System.Diagnostics;
+using System.Reflection;
+using System.Web;
 using System.Web.Optimization;
 
 namespace Drumly
@@ -34,12 +36,26 @@ namespace Drumly
 "~/Scripts/jquery-ui.min.js",
 "~/scripts/knockout-sortable.js",
 "~/Scripts/groove.js",
-"~/Scripts/store.min.js"));
+"~/Scripts/store.min.js",
+"~/Scripts/jquery.ba-bbq.min.js"));
 
 
             // Set EnableOptimizations to false for debugging. For more information,
             // visit http://go.microsoft.com/fwlink/?LinkId=301862
-            BundleTable.EnableOptimizations = false;
+            BundleTable.EnableOptimizations = IsRelease(typeof(BundleConfig).Assembly);
+        }
+
+        public static bool IsRelease(Assembly assembly)
+        {
+            object[] attributes = assembly.GetCustomAttributes(typeof(DebuggableAttribute), true);
+            if (attributes == null || attributes.Length == 0)
+                return true;
+
+            var d = (DebuggableAttribute)attributes[0];
+            if ((d.DebuggingFlags & DebuggableAttribute.DebuggingModes.Default) == DebuggableAttribute.DebuggingModes.None)
+                return true;
+
+            return false;
         }
     }
 }

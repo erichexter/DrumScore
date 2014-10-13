@@ -9,14 +9,17 @@
         }
 
         $(function() {
-            var model = new AppViewModel();
-            model.load();
-            model.onchange = function() { save(model); };
-            ko.applyBindings(model);
-            
-            setInterval(function () {
-                model.sync();
-            }, 5000);
+            var app = new Application();
+            app.load();
+            app.onchange = function() { save(app); };
+            ko.applyBindings(app);
+
+            app.sync();
+            setInterval(function() {
+                if (navigator.onLine) {
+                    app.sync();
+                }
+            }, 30000);
         });
 
     </script>
@@ -25,14 +28,14 @@
 <div>
     <h3>Sets</h3>
     <ul data-bind="foreach: sets">
-        <li><a data-bind="attr: { href: '/app/sets?id='+id() }"><span data-bind="text:title"></span></a></li>
+        <li><a data-bind="attr: { href: '/app/set/#id='+id() }"><span data-bind="text:title"></span></a></li>
     </ul>
     <a href="#" class="btn btn-sm hidden-print" data-bind="click: addSet">Add Set</a>
 
 
     <h3>Songs</h3>
     <ul data-bind="foreach: songs">
-        <li><a data-bind="attr: { href: '/app/song?id='+id() }"><span data-bind="text:title"></span></a></li>
+        <li><a data-bind="attr: { href: '/app/song/#id='+id() }"><span data-bind="text:title"></span></a></li>
     </ul>
     <a href="#" class="btn btn-sm hidden-print" data-bind="click: addSong">Add Song</a>
 

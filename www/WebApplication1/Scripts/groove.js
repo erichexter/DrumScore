@@ -1,20 +1,27 @@
 ﻿function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    var data=jQuery.deparam.fragment();
+    //name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    //var regex = new RegExp("[\\#?&]" + name + "=([^&#]*)"),
+    //    results = regex.exec(location.search);
+    //return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    var value = eval('data.' + name);
+    return value;
 }
 
 
 function SetViewModel() {
     var self = this;
+    self.currentSongIndex = ko.observable(0);
+    self.currentSong = ko.observable();
     self.changed = ko.observable(true);
     self.title = ko.observable();
     self.songs = ko.observableArray();
     self.id = ko.observable(guid());
     self.allsongs = new Array();
     self.changed = ko.observable(false);
-    self.load = function(id) {
+
+
+    self.load = function (id) {
         self.id(id);
         var app = store.get('app');
 
@@ -30,17 +37,70 @@ function SetViewModel() {
         }
 
         var data = store.get(id);
-        if (data != undefined && data.songs != undefined) {
-            for (i = 0; i < data.songs.length; i++) {
-                var set1 = data.songs[i];
-                self.songs.push(new song(set1.title, set1.id));
-            }
-        }
         if (data != undefined) {
-            self.changed(data.changed);
-        } else {
-            self.changed(true);
+            if (data != undefined && data.songs != undefined) {
+                for (i = 0; i < data.songs.length; i++) {
+                    var set1 = data.songs[i];
+                    //check for song title from song.
+                    var s = new song(set1.title, set1.id);
+                    var songvm = s.getSong();
+                    if (songvm.title() != s.title()) {
+                        s.title(songvm.title());
+                    }
+                    self.songs.push(s);
+                }
+            }
+            if (data.changed != undefined) {
+                self.changed(data.changed);
+            } else {
+                self.changed(true);
+            }
+            if (data.currentSongIndex != undefined) {
+                self.currentSongIndex(data.currentSongIndex);
+                self.changeSong(self.currentSongIndex());
+            }
+        }        
+    };
+
+    self.removeSong = function(index) {
+        self.songs.splice(index,1);
+        self.changed(true);
+        self.changeSong(0);
+        self.save();
+    };
+    
+    self.previousSong = function() {
+        if (self.currentSongIndex() >0) {
+            self.changeSong(self.currentSongIndex() - 1);
         }
+    };
+    self.nextSong = function() {
+        if (self.currentSongIndex()+1 < self.songs().length ) {
+            self.changeSong(self.currentSongIndex() + 1);
+        }
+    };
+    self.firstSong = function() {
+        self.changeSong(0);
+    };
+    self.lastSong = function() {
+        self.changeSong(self.songs().length-1);
+    };
+    self.changeSong = function (index) {
+        var song = self.songs()[index];
+        if (song != undefined) {
+            var data = store.get(song.id());
+            var songVM = new SongViewModel();
+            songVM.create(data);
+            self.currentSong(songVM);
+            self.currentSongIndex(index);
+        }
+    };
+
+    self.selectSong = function (song) {
+        var data = store.get(song.id());
+        var songVM = new SongViewModel();
+        songVM.create(data);
+        self.currentSong(songVM);
     };
 
     self.save = function() {
@@ -54,20 +114,21 @@ function SetViewModel() {
         self.save();
     };
     self.sync = function () {
-        if (self.changed()) {
-            $.ajax({
-                url: "/api/data/" + self.id() + "?type=set",
-                type: "Put",
-                data: ko.toJSON(self),
-                contentType: 'application/json; charset=utf-8',
-                success: function(data) {
-                },
-                error: function() { alert('error'); }
-            });
+        if (navigator.onLine) {
+            if (self.changed()) {
+                $.ajax({
+                    url: "/api/data/" + self.id() + "?type=set",
+                    type: "Put",
+                    data: ko.toJSON(self),
+                    contentType: 'application/json; charset=utf-8',
+                    success: function(data) {
+                    },
+                    error: function() { alert('error'); }
+                });
+            }
+            self.changed(false);
+            self.save();
         }
-        self.changed(false);
-        self.save();
-
     };
 }
 
@@ -81,7 +142,7 @@ function S4() {
 
 // then to call it, plus stitch in '4' in the third group
 
-function AppViewModel() {
+function Application() {
     var self = this;
     self.changed = ko.observable(true);
     self.id = ko.observable(guid());
@@ -111,6 +172,7 @@ function AppViewModel() {
             success: function (data) {
                 self.internalLoad(data);
                 self.downloadSets();
+                self.downloadSongs();
                 self.save();
             },
             error: function() {
@@ -146,6 +208,12 @@ function AppViewModel() {
             }
         }
 
+    };
+    self.downloadSongs = function () {
+        for (i = 0; i < self.songs().length; i++) {
+            var song = self.songs()[i];
+            self.downloadSong(song.id());
+        }
     };
 
     self.downloadSong = function(id) {
@@ -220,17 +288,30 @@ function AppViewModel() {
     };
 
     self.sync = function () {
-        if (self.changed()) {
-            $.ajax({
-                url: "/api/Data/" + self.id() + "/?type=App",
-                type: "Put",
-                data: ko.toJSON(self),
-                contentType: 'application/json; charset=utf-8',
-                success: function(data) {
-                },
-                error: function() { alert('error'); }
-            });
-            self.changed(false);
+        if (navigator.onLine) {
+            if (self.changed()) {
+                $.ajax({
+                    url: "/api/Data/" + self.id() + "/?type=App",
+                    type: "Put",
+                    data: ko.toJSON(self),
+                    contentType: 'application/json; charset=utf-8',
+                    success: function(data) {
+                    },
+                    error: function() { alert('error'); }
+                });
+                self.changed(false);
+                self.save();
+            }
+            for (i = 0; i < self.sets().length; i++) {
+                var set = new SetViewModel();
+                set.load(self.sets()[i].id());
+                set.sync();
+            }
+            for (i = 0; i < self.songs().length; i++) {
+                var song = new SongViewModel();
+                song.load(self.songs()[i].id());
+                song.sync();
+            }
         }
 
         for (i = 0; i < self.sets().length; i++) {
@@ -258,6 +339,11 @@ function song(title, id) {
     } else {
         self.id(id);
     }
+    self.getSong = function() {
+        var songVM = new SongViewModel();
+        songVM.load(self.id());
+        return songVM;
+    };
 }
 
 function set(title, id) {
@@ -335,20 +421,22 @@ function SongViewModel() {
         self.changed(true);
     };
 
-    self.sync = function () {
-        if (self.changed()) {
-            var id = self.id();
-            $.ajax({
-                url: "/api/Songs/" + id,
-                type: "Put",
-                data: ko.toJSON(self),
-                contentType: 'application/json; charset=utf-8',
-                success: function(data) {
-                    self.changed(false);
-                    self.save();
-                },
-                error: function() { alert('error'); }
-            });
+    self.sync = function() {
+        if (navigator.onLine) {
+            if (self.changed()) {
+                var id = self.id();
+                $.ajax({
+                    url: "/api/Songs/" + id,
+                    type: "Put",
+                    data: ko.toJSON(self),
+                    contentType: 'application/json; charset=utf-8',
+                    success: function(data) {
+                        self.changed(false);
+                        self.save();
+                    },
+                    error: function() { alert('error'); }
+                });
+            }
         }
     };
 

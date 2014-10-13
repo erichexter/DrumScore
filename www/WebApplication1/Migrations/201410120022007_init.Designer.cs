@@ -13,7 +13,7 @@ namespace Drumly.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201408312123569_init"; }
+            get { return "201410120022007_init"; }
         }
         
         string IMigrationMetadata.Source

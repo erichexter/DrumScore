@@ -1,22 +1,17 @@
-﻿@using System.Configuration
+﻿@{ Layout = null;Response.ContentType = "text/cache-manifest";}CACHE MANIFEST
+@using System.Configuration
 @using System.Reflection
-CACHE MANIFEST
-@{
-    Layout = null;
-    Response.ContentType = "text/cache-manifest";
-}
-#v@(File.GetCreationTime(Assembly.GetExecutingAssembly().Location).ToUniversalTime().Subtract(
-    new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-    ).TotalMilliseconds)
-
-@Url.Action("Index", "App")
-@Url.Action("Set", "App")
-@Url.Action("Song", "App")
-@Url.Action("Index", "Home")
-
-CACHE:
-
+# v@(File.GetCreationTime(Assembly.GetExecutingAssembly().Location).ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds)
+@Url.Action("index", "app")
+@Url.Action("set", "app")
+@Url.Action("song", "app")
+@Url.Action("sets", "app")
+@Url.Action("songs", "app")
+@Url.Action("index", "home")
+/fonts/glyphicons-halflings-regular.woff
 @foreach (var bundle in BundleTable.Bundles.GetRegisteredBundles())
 {
 <text>@BundleTable.Bundles.ResolveBundleUrl(bundle.Path)</text>
 }
+NETWORK:
+*
