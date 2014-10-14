@@ -28,14 +28,14 @@
 <div>
     <h3>Sets</h3>
     <ul data-bind="foreach: sets">
-        <li><a data-bind="attr: { href: '/app/set/#id='+id() }"><span data-bind="text:title"></span></a></li>
+        <li><a data-bind="attr: { href: '/app/set#id='+id() }"><span data-bind="text:title"></span></a></li>
     </ul>
     <a href="#" class="btn btn-sm hidden-print" data-bind="click: addSet">Add Set</a>
 
 
     <h3>Songs</h3>
     <ul data-bind="foreach: songs">
-        <li><a data-bind="attr: { href: '/app/song/#id='+id() }"><span data-bind="text:title"></span></a></li>
+        <li><a data-bind="attr: { href: '/app/song#id='+id() }"><span data-bind="text:title"></span></a></li>
     </ul>
     <a href="#" class="btn btn-sm hidden-print" data-bind="click: addSong">Add Song</a>
 

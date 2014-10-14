@@ -262,8 +262,13 @@ function Application() {
         }
         if (data != undefined && data.songs != undefined) {
             for (i = 0; i < data.songs.length; i++) {
-                var set1 = data.songs[i];
-                self.songs.push(new song(set1.title, set1.id));
+                var s1 = data.songs[i];
+                var s2 = new song(s1.title, s1.id);
+                var s3 = s2.getSong();
+                if (s2.title() != s3.title()) {
+                    s2.title(s3.title());
+                }
+                self.songs.push(s2);
             }
         }
         if (data != undefined && data.id != undefined) {

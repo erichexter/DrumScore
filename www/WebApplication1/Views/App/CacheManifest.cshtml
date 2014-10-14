@@ -8,7 +8,6 @@
 @Url.Action("sets", "app")
 @Url.Action("songs", "app")
 @Url.Action("index", "home")
-/fonts/glyphicons-halflings-regular.woff
 @foreach (var bundle in BundleTable.Bundles.GetRegisteredBundles())
 {
 <text>@BundleTable.Bundles.ResolveBundleUrl(bundle.Path)</text>
