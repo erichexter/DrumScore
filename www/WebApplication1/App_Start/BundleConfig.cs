@@ -35,7 +35,10 @@ namespace Drumly
 "~/Scripts/edit.js",
 "~/Scripts/jquery-ui.min.js",
 "~/scripts/knockout-sortable.js",
-"~/Scripts/groove.js",
+"~/Scripts/app/util.js",
+"~/Scripts/app/song.js",
+"~/Scripts/app/set.js",
+"~/Scripts/app/application.js",
 "~/Scripts/store.min.js",
 "~/Scripts/jquery.ba-bbq.min.js"));
 
