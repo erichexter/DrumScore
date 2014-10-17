@@ -79,7 +79,10 @@
             type: "Get",
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
-                store.set(id, data);
+                var songvm = new SongViewModel();
+                songvm.create(data);
+                songvm.save();
+                ///store.set(id, data);
             },
             error: function (xhr) {
                 if (console && console.log)
